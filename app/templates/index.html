@@ -1,0 +1,39 @@
+<!-- app/templates/index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>PDF Overview</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <h1>PDF Overview</h1>
+        <div class="grid">
+            {% for pdf, image_path in pdf_previews %}
+            <div class="grid-item" onclick="openPdfViewer('{{ pdf }}')">
+                {% if image_path %}
+                <img src="{{ url_for('static', filename=image_path) }}" alt="Preview of {{ pdf }}">
+                {% else %}
+                <p>No preview available for {{ pdf }}</p>
+                {% endif %}
+                <p>{{ pdf }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        function openPdfViewer(pdfName) {
+            // Construct the URL for the Flask route which will serve the PDF
+            const url = `/view-pdf?name=${encodeURIComponent(pdfName)}`;
+            // Open the PDF in a new browser tab
+            window.open(url, '_blank');
+        }
+    </script>
+</body>
+
+</html>

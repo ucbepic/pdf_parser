@@ -1,0 +1,89 @@
+<!-- app/templates/label_pdf.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Label PDF</title>
+    <style>
+        /* Add any additional styles here */
+        #pdf-container {
+            width: 100%;
+            height: 100vh;
+            /* Adjust as needed */
+            position: relative;
+        }
+
+        .page-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(118, 42, 131, 0.2);
+            /* Initial overlay color */
+        }
+    </style>
+</head>
+
+<body>
+    <div id="pdf-container"></div>
+    <script type="module">
+        import * as pdfjsLib from "{{ url_for('static', filename='js/pdf.mjs') }}";
+
+        const color_wheel = ['rgba(118,42,131, 0.2)', 'rgba(175,141,195,0.2)', 'rgba(231,212,232,0.2)', 'rgba(217,240,211,0.2)', 'rgba(127,191,123,0.2)', 'rgba(27,120,55,0.2)']
+        async function loadPdf() {
+            const url = `{{ url_for('static', filename='private/pdfs/' + pdf_name) }}`;
+            const loadingTask = pdfjsLib.getDocument(url);
+
+            try {
+                const pdf = await loadingTask.promise;
+                const container = document.getElementById('pdf-container');
+
+                for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                    const page = await pdf.getPage(pageNum);
+                    const scale = 1.5; // Adjust as needed
+                    const viewport = page.getViewport({ scale: scale });
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+
+                    const renderContext = {
+                        canvasContext: context,
+                        viewport: viewport
+                    };
+                    await page.render(renderContext).promise;
+
+                    const overlay = document.createElement('div');
+                    overlay.className = 'page-overlay';
+                    overlay.style.height = `${viewport.height}px`;
+                    overlay.style.width = `${viewport.width}px`;
+                    overlay.onclick = (function () {
+                        var i = 1;
+                        return function () {
+                            this.style.backgroundColor = color_wheel[i % color_wheel.length];
+                            i++;
+                        };
+                    })();
+
+                    const wrapper = document.createElement('div');
+                    wrapper.style.position = 'relative';
+                    wrapper.appendChild(canvas);
+                    wrapper.appendChild(overlay);
+                    container.appendChild(wrapper);
+                }
+            } catch (e) {
+                console.error('Error loading PDF:', e);
+            }
+        }
+
+        // Set the workerSrc property
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "{{ url_for('static', filename='js/pdf.worker.mjs') }}";
+
+        loadPdf();
+    </script>
+</body>
+
+</html>
