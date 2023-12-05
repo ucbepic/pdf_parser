@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify
 from werkzeug.utils import secure_filename
 from PIL import Image
 import os
+import flor
 
 
 app = Flask(__name__)
@@ -49,6 +50,7 @@ def view_pdf():
         return "No file specified.", 400
 
     pdf_name = secure_filename(pdf_name)
+    flor.log("pdf_name", pdf_name)
 
     pdf_path = os.path.join(PDF_DIR, pdf_name)
 
@@ -64,8 +66,8 @@ def save_colors():
     j = request.get_json()
     colors = j.get("colors", [])
     # Process the colors here...
-    for color in colors:
-        print(f"Color: {color}")
+    for color in flor.loop("colors", colors):
+        print(f"Color: {flor.log('color', color)}")
     return jsonify({"message": "Colors saved successfully"}), 200
 
 
