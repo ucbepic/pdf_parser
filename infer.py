@@ -27,6 +27,7 @@ def get_full_path(directory, file):
 
 if __name__ == "__main__":
     from train import model, device, transform
+
     if os.path.exists("model.pth"):
         state_dict = torch.load("model.pth", map_location=device)
         model.load_state_dict(state_dict)
@@ -46,7 +47,7 @@ if __name__ == "__main__":
                 if model:
                     print("Predicting...")
                     image = Image.open(image_path)
-                    input_tensor = transform(image).unsqueeze(0).to(device)
+                    input_tensor = transform(image).unsqueeze(0).to(device)  # type: ignore
                     with torch.no_grad():
                         output = model(input_tensor)
                         _, predicted = torch.max(output.data, 1)
