@@ -1,4 +1,4 @@
-.PHONY: run install lint clean data_prep
+.PHONY: run install lint clean pdf2png infer retrain
 
 # Set the FLASK_APP environment variable
 export FLASK_APP=run.py
@@ -14,20 +14,25 @@ clean:
 	@echo "Cleaning up..."
 	@find . -type f -name '*.pyc' -delete
 	@find . -type d -name '__pycache__' -delete
+	@find app/static/private/imgs -mindepth 1 -delete
 
-data_prep:
+pdf2png:
 	@echo "Preparing data..."
 	@python pdf2png.py
 
-infer: data_prep
+infer: 
 	@echo "Inferencing..."
 	@python infer.py
 
-retrain: data_prep
+retrain: 
 	@echo "Retraining..."
 	@python retrain.py
 
+apply_split:
+	@echo "Applying split..."
+	@python apply_split.py
+
 # Run the Flask development server
-run: infer
+run:
 	@echo "Starting Flask development server..."
 	@flask run

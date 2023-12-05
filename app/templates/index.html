@@ -20,7 +20,9 @@
                 {% else %}
                 <p>No preview available for {{ pdf }}</p>
                 {% endif %}
-                <p>{{ pdf }}</p>
+                <div class="filename-container">
+                    <p>{{ pdf }}</p>
+                </div>
             </div>
             {% endfor %}
         </div>

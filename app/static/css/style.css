@@ -9,11 +9,39 @@
     gap: 20px;
 }
 
-.grid-item {
-    text-align: center;
-}
-
 .grid-item img {
     width: 100%;
     height: auto;
+}
+
+.grid-item {
+    text-align: center;
+    display: flex;
+    /* Added to use flex properties */
+    flex-direction: column;
+    /* Stack children vertically */
+    justify-content: space-between;
+    /* Space out the image and the filename */
+    min-height: 250px;
+    /* Adjust the height to fit content */
+}
+
+.grid-item p {
+    white-space: normal;
+    /* Allows text wrapping */
+    overflow-wrap: break-word;
+    /* Breaks the word to prevent overflow */
+    max-width: 100%;
+    /* Ensures text doesn't exceed its container */
+    margin-top: 0.5em;
+    /* Gives some space above the filename */
+}
+
+.filename-container {
+    overflow: hidden;
+    /* Hide overflow */
+    text-overflow: ellipsis;
+    /* Add an ellipsis for overflow text */
+    padding: 0 5px;
+    /* Add some padding to not have text touch the edges */
 }
