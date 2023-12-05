@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from werkzeug.utils import secure_filename
 from PIL import Image
 import os
@@ -57,6 +57,14 @@ def view_pdf():
         return render_template("label_pdf.html", pdf_name=pdf_name)
     else:
         return "File not found.", 404
+
+
+@app.route("/save_colors", methods=["POST"])
+def save_colors():
+    colors = request.get_json().get("colors", [])
+    # Process the colors here...
+    print(colors)
+    return jsonify({"message": "Colors saved successfully"}), 200
 
 
 if __name__ == "__main__":
