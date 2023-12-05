@@ -61,9 +61,11 @@ def view_pdf():
 
 @app.route("/save_colors", methods=["POST"])
 def save_colors():
-    colors = request.get_json().get("colors", [])
+    j = request.get_json()
+    colors = j.get("colors", [])
     # Process the colors here...
-    print(colors)
+    for color in colors:
+        print(f"Color: {color}")
     return jsonify({"message": "Colors saved successfully"}), 200
 
 

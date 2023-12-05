@@ -53,7 +53,11 @@
 
 <body>
     <button id="save-close-btn">Save & Close</button> <!-- Added button -->
-    <script>
+    <div id="pdf-container"></div>
+    <script type="module">
+        import * as pdfjsLib from "{{ url_for('static', filename='js/pdf.mjs') }}";
+
+        const color_wheel = ['rgba(118, 42, 131, 0.2)', 'rgba(175, 141, 195, 0.2)', 'rgba(231, 212, 232, 0.2)', 'rgba(217, 240, 211, 0.2)', 'rgba(127, 191, 123, 0.2)', 'rgba(27, 120, 55, 0.2)'];
         // Add event listener to button
         document.getElementById('save-close-btn').addEventListener('click', function () {
             // Get all the overlays
@@ -65,25 +69,36 @@
                 // Get the color of the overlay
                 const color = overlays[i].style.backgroundColor;
                 // Add the color to the array
-                colors.push(color);
+                if (color) {
+                    colors.push(color_wheel.indexOf(color));
+                } else {
+                    colors.push(0);
+                }
             }
             // Send the colors to the server
             fetch('/save_colors', {
                 method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify({
                     colors: colors
                 })
-            }).then(function (response) {
-                // Redirect to the home page
-                window.location.href = '/';
-            });
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data);
+                    // Redirect to the home page
+                    window.close();
+                })
+                .catch(error => console.error('Error:', error));
         });
-    </script>
-    <div id="pdf-container"></div>
-    <script type="module">
-        import * as pdfjsLib from "{{ url_for('static', filename='js/pdf.mjs') }}";
 
-        const color_wheel = ['rgba(118,42,131, 0.2)', 'rgba(175,141,195,0.2)', 'rgba(231,212,232,0.2)', 'rgba(217,240,211,0.2)', 'rgba(127,191,123,0.2)', 'rgba(27,120,55,0.2)']
         async function loadPdf() {
             const url = `{{ url_for('static', filename='private/pdfs/' + pdf_name) }}`;
             const loadingTask = pdfjsLib.getDocument(url);
