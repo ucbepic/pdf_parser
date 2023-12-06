@@ -1,14 +1,24 @@
-.PHONY: run install lint clean pdf2png infer retrain
+.PHONY: run install lint clean pdf2png infer apply_split
 
 # Set the FLASK_APP environment variable
 export FLASK_APP=run.py
+
 export FLASK_ENV=development
+
+PDFS := $(wildcard app/static/private/pdfs/*.pdf)
+IMAGES := $(patsubst app/static/private/pdfs/%.pdf,app/static/private/imgs/%.png,$(PDFS))
+
+all: $(IMAGES)
+
+$(IMAGES): app/static/private/imgs/%.png : app/static/private/pdfs/%.pdf
+	@echo "Preparing data..."
+	@python pdf2png.py
 
 # Install dependencies from requirements.txt
 install:
 	@echo "Installing dependencies..."
 	@pip install -r requirements.txt
-
+ 
 # Clean up pyc files and __pycache__ directories
 clean:
 	@echo "Cleaning up..."
@@ -20,13 +30,17 @@ pdf2png:
 	@echo "Preparing data..."
 	@python pdf2png.py
 
+model.pth: get_best_ckpt.py
+	@echo "Generating model..."
+	@python get_best_ckpt.py
+
 infer: 
 	@echo "Inferencing..."
 	@python infer.py
 
-retrain: 
-	@echo "Retraining..."
-	@python retrain.py
+train:
+	@echo "Training..."
+	@python train.py
 
 apply_split:
 	@echo "Applying split..."
