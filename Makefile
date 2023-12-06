@@ -30,7 +30,7 @@ model.pth: get_best_ckpt.py
 	@echo "Generating model..."
 	@python get_best_ckpt.py
 
-infer: 
+infer: model.pth
 	@echo "Inferencing..."
 	@python infer.py
 
