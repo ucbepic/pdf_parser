@@ -8,11 +8,11 @@ export FLASK_ENV=development
 PDFS := $(wildcard app/static/private/pdfs/*.pdf)
 IMAGES := $(patsubst app/static/private/pdfs/%.pdf,app/static/private/imgs/%.png,$(PDFS))
 
-images: $(IMAGES)
-
 $(IMAGES): app/static/private/imgs/%.png : app/static/private/pdfs/%.pdf
 	@echo "Preparing data..."
 	@python pdf2png.py
+
+images: $(IMAGES)
 
 # Install dependencies from requirements.txt
 install:
@@ -43,6 +43,6 @@ apply_split:
 	@python apply_split.py
 
 # Run the Flask development server
-run:
+run: images
 	@echo "Starting Flask development server..."
 	@flask run
