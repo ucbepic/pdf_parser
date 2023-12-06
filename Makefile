@@ -34,7 +34,7 @@ infer: model.pth
 	@echo "Inferencing..."
 	@python infer.py
 
-train:
+train: images
 	@echo "Training..."
 	@python train.py
 
