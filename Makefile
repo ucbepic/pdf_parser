@@ -1,4 +1,4 @@
-.PHONY: run install lint clean  infer apply_split images train
+.PHONY: run install lint clean  infer apply_split images train last_inference
 
 # Set the FLASK_APP environment variable
 export FLASK_APP=run.py
@@ -42,7 +42,12 @@ apply_split:
 	@echo "Applying split..."
 	@python apply_split.py
 
+# A dummy file to track when inferencing was last run
+last_inference: infer
+    @touch last_inference
+
 # Run the Flask development server
-run: images
+run: images last_inference
 	@echo "Starting Flask development server..."
 	@flask run
+
