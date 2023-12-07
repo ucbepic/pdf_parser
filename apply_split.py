@@ -1,22 +1,16 @@
 import flor
 import fitz
 import os
-
-from app import PDF_DIR
-
 import warnings
+import sys
+from tqdm import tqdm
+from app import PDF_DIR
 
 delta_colors = flor.pivot("pdf_name", "color")
 delta_colors = flor.utils.latest(delta_colors)
-delta_colors = delta_colors.sort_values(by=["pdf_name", "color"])
-# print(delta_colors)
-color_segments = delta_colors.groupby(["pdf_name", "color"])["colors"].agg(
-    ["min", "max"]
-)
-print(color_segments)
+delta_colors = delta_colors.sort_values(by=["pdf_name", "colors"])
+print(delta_colors)
 
-import sys
-sys.exit(0)
 
 def split_pdf(pdf_name, start_page, end_page):
     print(f"Splitting {pdf_name} from {start_page} to {end_page}")
@@ -34,13 +28,18 @@ def split_pdf(pdf_name, start_page, end_page):
     new_doc.close()
     doc.close()
 
+for pdf_name in delta_colors["pdf_name"].unique():
+    pdf_colors = delta_colors[delta_colors["pdf_name"] == pdf_name].sort_values(by=["colors"])
+    print(pdf_colors)
+    segments = []
+    for index, row in pdf_colors.iterrows():
+        if index == 0 or row["colors"] != pdf_colors.iloc[index - 1]["colors"]:
+            segments.append([row["colors"]])
+        else:
+            segments[-1].append(row["colors"])
+    for segment in segments:
+        split_pdf(pdf_name, min(segment), max(segment))
 
-for index, row in color_segments.iterrows():
-    pdf_name, color = index
-    start_page, end_page = row["min"], row["max"]
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        split_pdf(pdf_name, start_page, end_page)
 
 for pdf_name in delta_colors["pdf_name"].unique():
     os.remove(os.path.join(PDF_DIR, pdf_name))
