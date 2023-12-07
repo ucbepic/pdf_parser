@@ -44,7 +44,7 @@ apply_split:
 
 # A dummy file to track when inferencing was last run
 last_inference: infer
-    @touch last_inference
+	@touch last_inference
 
 # Run the Flask development server
 run: images last_inference

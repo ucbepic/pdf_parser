@@ -1,50 +1,52 @@
 # PDF Parser
+This project presents a Flask-based web application with a focus on user interface and optional AI integration. The primary command, `make run`, initiates the web server and provides access to the core functionalities. Advanced users can optionally enhance the application by training a model or updating it with the best version.
 
-This project is a Flask web application that parses PDFs and uses machine learning to infer and train data. The application is built with Python, Flask, Flor, and PyTorch.
+## Running the Web Application
 
-## Flask Web Application
+### Prerequisites
+- Python 3.x
+- Flask
+- Other dependencies in `requirements.txt`
 
-The Flask application is responsible for handling PDF files and converting them into images for further processing. The application has two main routes:
-
-- `/` (index): This route lists all the PDF files in the PDF_DIR directory and displays a preview of each PDF file. The previews are PNG images that are resized to a standard size for display.
-
-- `/view-pdf`: This route takes a PDF file name as a parameter and displays the PDF file if it exists in the PDF_DIR directory.
-
-The application uses the PIL library to handle image resizing and the werkzeug library to handle file security.
-
-## Infer Pipeline
-
-The infer pipeline is implemented in `infer.py`. It uses the Flor library to manage the experiment and the PyTorch library to load the trained model and make predictions. The pipeline processes all the images in the IMGS_DIR directory and makes a prediction for each image. The prediction results are logged with Flor.
-
-## Train Pipeline
-
-The train pipeline is implemented in `train.py`. It uses the Flor library to manage the experiment and the PyTorch library to define the model, loss function, optimizer, and learning rate scheduler. The pipeline uses a ResNet18 model with a modified final layer for binary classification. The model is trained on a dataset of images and their labels, which are loaded using a custom PDFPagesDataset class. The training process includes both a training phase and a validation phase for each epoch.
-
-## Getting Started
-
-To get started with this project, you need to install the required Python packages. You can do this by running the following command:
-
-```
+### Quick Start
+To quickly start the web application:
+```bash
+git clone git@github.com:ucbepic/pdf_parser.git
+cd pdf_parser
 make install
+make run
+```
+This command sets up the environment and launches the Flask web server, ready for use.
+
+## Optional AI Integration
+
+### Training the Model
+For users interested in AI functionalities:
+- Train the model with:
+  ```bash
+  make train
+  ```
+
+### Updating the Model
+- Update the repository with the best model using:
+  ```bash
+  make model.pth
+  ```
+  This command enhances the application's AI capabilities by using the most effective model.
+
+### Cleaning Up
+Remove generated files and clean up:
+```bash
+make clean
 ```
 
-After installing the dependencies, you can start the Flask application by running the following command:
-
-```
-flask run
-```
-
-You can also run the infer and train pipelines by running the following commands:
-
-```
-python infer.py
-python train.py
-```
+## Project Structure
+- `run.py`: Flask application entry point.
+- `get_best_ckpt.py`: Script to generate `model.pth`.
+- `Makefile`: Manages the build, run, and AI integration process.
 
 ## Contributing
-
-Contributions are welcome. Please open an issue to discuss your ideas or open a pull request with your changes.
+Contributions are welcome. Please use standard fork-and-pull request workflow for any contributions.
 
 ## License
-
-This project is licensed under the terms of the MIT license.
+This project is licensed under the Apache License, Version 2.0 
