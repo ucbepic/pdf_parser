@@ -2,11 +2,11 @@ import fitz
 import os
 
 from app import PDF_DIR, IMGS_DIR
-
+from tqdm import tqdm
 
 def convert_pdf_to_images(pdf_folder, output_folder):
     # Iterate through each PDF in the folder
-    for pdf_file in os.listdir(pdf_folder):
+    for pdf_file in tqdm(os.listdir(pdf_folder)):
         if not pdf_file.endswith(".pdf"):
             continue
 
