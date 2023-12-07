@@ -18,6 +18,11 @@ make run
 ```
 This command sets up the environment and launches the Flask web server, ready for use.
 
+## Storing PDFs for Processing
+
+For privacy and organization, this application processes PDFs stored in a specific directory: `app/static/private/pdfs`. This directory is excluded from version control via `.gitignore` to ensure privacy and data security.
+
+
 ## Optional AI Integration
 
 ### Training the Model
