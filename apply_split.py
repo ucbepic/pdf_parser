@@ -33,7 +33,8 @@ for pdf_name in delta_colors["pdf_name"].unique():
     print(pdf_colors)
     segments = []
     for index, row in pdf_colors.iterrows():
-        if index == 0 or (int(row["colors"]) != int(pdf_colors.iloc[index - 1]["colors"])):
+        print(index, row)
+        if index == 0 or (int(row["color"]) != int(pdf_colors.iloc[index - 1]["color"])):
             print("New segment")
             segments.append([row["colors"]])
         else:
