@@ -10,7 +10,7 @@ IMAGES := $(patsubst app/static/private/pdfs/%.pdf,app/static/private/imgs/%.png
 
 $(IMAGES): app/static/private/imgs/%.png : app/static/private/pdfs/%.pdf
 	@echo "Preparing data..."
-	@python pdf2png.py
+	python pdf2png.py
 
 images: $(IMAGES)
 

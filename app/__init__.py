@@ -50,7 +50,8 @@ def view_pdf():
         return "No file specified.", 400
 
     pdf_name = secure_filename(pdf_name)
-    flor.log("pdf_name", pdf_name)
+    save_colors_stack.append(pdf_name)
+    
 
     pdf_path = os.path.join(PDF_DIR, pdf_name)
 
@@ -60,12 +61,15 @@ def view_pdf():
     else:
         return "File not found.", 404
 
-
+save_colors_stack = []
 @app.route("/save_colors", methods=["POST"])
 def save_colors():
     j = request.get_json()
     colors = j.get("colors", [])
     # Process the colors here...
+    pdf_name = save_colors_stack.pop()
+    save_colors_stack.clear()
+    flor.log("pdf_name", pdf_name)
     for color in flor.loop("colors", colors):
         print(f"Color: {flor.log('color', color)}")
     return jsonify({"message": "Colors saved successfully"}), 200

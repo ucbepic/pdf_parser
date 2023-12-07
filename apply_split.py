@@ -13,7 +13,10 @@ delta_colors = delta_colors.sort_values(by=["pdf_name", "color"])
 color_segments = delta_colors.groupby(["pdf_name", "color"])["colors"].agg(
     ["min", "max"]
 )
+print(color_segments)
 
+import sys
+sys.exit(0)
 
 def split_pdf(pdf_name, start_page, end_page):
     print(f"Splitting {pdf_name} from {start_page} to {end_page}")
