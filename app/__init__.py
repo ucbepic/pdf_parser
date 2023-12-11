@@ -14,6 +14,9 @@ os.makedirs(PDF_DIR, exist_ok=True)
 IMGS_DIR = os.path.join("app", "static", "private", "imgs")
 os.makedirs(IMGS_DIR, exist_ok=True)
 
+TXT_DIR = os.path.join("app", "static", "private", "txts")
+os.makedirs(TXT_DIR, exist_ok=True)
+
 
 def resize_image(image_path, size=(300, 400)):
     # Open an image file
@@ -51,7 +54,6 @@ def view_pdf():
 
     pdf_name = secure_filename(pdf_name)
     save_colors_stack.append(pdf_name)
-    
 
     pdf_path = os.path.join(PDF_DIR, pdf_name)
 
@@ -61,7 +63,10 @@ def view_pdf():
     else:
         return "File not found.", 404
 
+
 save_colors_stack = []
+
+
 @app.route("/save_colors", methods=["POST"])
 def save_colors():
     j = request.get_json()
