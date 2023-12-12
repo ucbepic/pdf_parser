@@ -8,6 +8,7 @@ from app import PDF_DIR, IMGS_DIR, TXT_DIR, OCR_DIR
 from tqdm import tqdm
 import io
 import math
+import time
 
 
 def process_page(pdf_path, page_num, img_path, txt_path, ocr_path):
@@ -70,7 +71,7 @@ if __name__ == "__main__":
     if cpu_count is None:
         max_workers = 1
     else:
-        max_workers = min(4, cpu_count - 1)
+        max_workers = cpu_count // 4
 
     for pdf_file in tqdm(os.listdir(PDF_DIR)):
         if not pdf_file.endswith(".pdf"):
@@ -80,7 +81,7 @@ if __name__ == "__main__":
         process_pdf(pdf_path, all_args)
 
     # Create a pool of workers and distribute the tasks
-    print("Processing PDFs...")
+    print(f"Parallel processing over {max_workers} cores ...")
     with Pool(max_workers) as pool:
         pool.starmap(process_page, all_args)
     print("Done!")
