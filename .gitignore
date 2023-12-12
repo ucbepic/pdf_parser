@@ -162,3 +162,5 @@ cython_debug/
 #.idea/
 .DS_Store
 last_inference
+process_pdfs
+infer

@@ -1,4 +1,4 @@
-.PHONY: run install clean  infer apply_split process_pdfs train install_tesseract
+.PHONY: run install clean apply_split train install_tesseract
 
 # Set the FLASK_APP environment variable
 export FLASK_APP=run.py
@@ -12,6 +12,7 @@ UNAME_S := $(shell uname -s)
 process_pdfs: $(PDFS)
 	@echo "Processing PDF files..."
 	@python pdf_demux.py
+	@touch process_pdfs
 
 model.pth: get_best_ckpt.py
 	@echo "Generating model..."
@@ -20,6 +21,7 @@ model.pth: get_best_ckpt.py
 infer: model.pth
 	@echo "Inferencing..."
 	@python infer.py
+	@touch infer
 
 train: process_pdfs
 	@echo "Training..."
@@ -28,13 +30,10 @@ train: process_pdfs
 apply_split:
 	@echo "Applying split..."
 	@python apply_split.py
-
-# A dummy file to track when inferencing was last run
-last_inference: infer
-	@touch last_inference
+	
 
 # Run the Flask development server
-run: process_pdfs last_inference
+run: process_pdfs infer
 	@echo "Starting Flask development server..."
 	@flask run
 
@@ -65,4 +64,6 @@ clean:
 	@find app/static/private/imgs -mindepth 1 -delete
 	@find app/static/private/txts -mindepth 1 -delete
 	@find app/static/private/ocr -mindepth 1 -delete
+	@rm infer
+	@rm process_pdfs
 	
