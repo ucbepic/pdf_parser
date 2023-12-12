@@ -24,6 +24,8 @@ def process_pdf(pdf_path):
         pix = page.get_pixmap()
         output_image = os.path.join(img_path, f"page_{page_num}.png")
         pix.save(output_image)
+        img_bytes = io.BytesIO(pix.tobytes("png"))
+        img = Image.open(img_bytes)
 
         if page_num == 0:
             # Save the first page as the preview
@@ -39,8 +41,6 @@ def process_pdf(pdf_path):
             text_file.write(text)
 
         # Extract text with pytesseract
-        img_bytes = io.BytesIO(pix.tobytes("png"))
-        img = Image.open(img_bytes)
         extracted_text = pytesseract.image_to_string(img)
 
         # Save the extracted text
