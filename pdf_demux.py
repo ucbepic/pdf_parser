@@ -7,6 +7,7 @@ from multiprocessing import Pool
 from app import PDF_DIR, IMGS_DIR, TXT_DIR, OCR_DIR
 from tqdm import tqdm
 import io
+import math
 
 
 def process_page(pdf_path, page_num, img_path, txt_path, ocr_path):
@@ -43,7 +44,7 @@ def process_page(pdf_path, page_num, img_path, txt_path, ocr_path):
     doc.close()
 
 
-def process_pdf(pdf_path):
+def process_pdf(pdf_path, all_args):
     # set img_path, txt_path, and ocr_path
     img_path = os.path.join(IMGS_DIR, os.path.splitext(os.path.basename(pdf_path))[0])
     os.makedirs(img_path, exist_ok=True)
@@ -56,19 +57,30 @@ def process_pdf(pdf_path):
     page_numbers = range(len(doc))
     doc.close()
 
-    # Create a pool of workers and distribute the tasks
-    with Pool() as pool:
-        args = [
-            (pdf_path, page_num, img_path, txt_path, ocr_path)
-            for page_num in page_numbers
-        ]
-        pool.starmap(process_page, args)
+    args = [
+        (pdf_path, page_num, img_path, txt_path, ocr_path) for page_num in page_numbers
+    ]
+    all_args.extend(args)
 
 
 if __name__ == "__main__":
+    all_args = []
+
+    cpu_count = os.cpu_count()
+    if cpu_count is None:
+        max_workers = 1
+    else:
+        max_workers = min(4, cpu_count - 1)
+
     for pdf_file in tqdm(os.listdir(PDF_DIR)):
         if not pdf_file.endswith(".pdf"):
             continue
 
         pdf_path = os.path.join(PDF_DIR, pdf_file)
-        process_pdf(pdf_path)
+        process_pdf(pdf_path, all_args)
+
+    # Create a pool of workers and distribute the tasks
+    print("Processing PDFs...")
+    with Pool(max_workers) as pool:
+        pool.starmap(process_page, all_args)
+    print("Done!")
