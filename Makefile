@@ -64,3 +64,5 @@ clean:
 	@find . -type d -name '__pycache__' -delete
 	@find app/static/private/imgs -mindepth 1 -delete
 	@find app/static/private/txts -mindepth 1 -delete
+	@find app/static/private/ocr -mindepth 1 -delete
+	

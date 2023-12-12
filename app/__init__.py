@@ -17,6 +17,9 @@ os.makedirs(IMGS_DIR, exist_ok=True)
 TXT_DIR = os.path.join("app", "static", "private", "txts")
 os.makedirs(TXT_DIR, exist_ok=True)
 
+OCR_DIR = os.path.join("app", "static", "private", "ocr")
+os.makedirs(OCR_DIR, exist_ok=True)
+
 
 def resize_image(image_path, size=(300, 400)):
     # Open an image file
