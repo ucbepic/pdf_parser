@@ -83,7 +83,6 @@
 <body>
     <button id="save-close-btn">Save & Close</button> <!-- Added button -->
     <div id="pdf-container" class="pdf-container"></div>
-    <div class="data-container"></div>
     <script type="module">
         import * as pdfjsLib from "{{ url_for('static', filename='js/pdf.mjs') }}";
 
@@ -136,7 +135,6 @@
             try {
                 const pdf = await loadingTask.promise;
                 const container = document.getElementById('pdf-container');
-                const dataContainer = document.querySelector('.data-container'); // Select the data container
 
                 for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
                     const page = await pdf.getPage(pageNum);
@@ -177,9 +175,10 @@
                     // Create a new element for the metadata and append it to the data-container
                     const metadataContainer = document.createElement('div');
                     metadataContainer.classList.add('metadata');
+                    metadataContainer.classList.add('data-container');
                     metadataContainer.id = 'metadata-page-' + pageNum;
                     metadataContainer.textContent = metadataText;
-                    dataContainer.appendChild(metadataContainer);
+                    container.appendChild(metadataContainer);
                 }
             } catch (e) {
                 console.error('Error loading PDF:', e);
