@@ -1,5 +1,4 @@
-from app import PDF_DIR, TXT_DIR
-
+from .constants import PDF_DIR, TXT_DIR
 import re
 
 

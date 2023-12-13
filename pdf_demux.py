@@ -4,7 +4,7 @@ from PIL import Image
 import pytesseract
 from multiprocessing import Pool
 
-from app import PDF_DIR, IMGS_DIR, TXT_DIR, OCR_DIR
+from app.constants import PDF_DIR, IMGS_DIR, TXT_DIR, OCR_DIR
 from tqdm import tqdm
 import io
 import math

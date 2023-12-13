@@ -4,7 +4,7 @@ import os
 import warnings
 import sys
 from tqdm import tqdm
-from app import PDF_DIR
+from app.constants import PDF_DIR
 
 delta_colors = flor.pivot("pdf_name", "color")
 delta_colors = flor.utils.latest(delta_colors)
