@@ -9,7 +9,7 @@ PDFS := $(wildcard app/static/private/pdfs/*.pdf)
 # Detect OS
 UNAME_S := $(shell uname -s)
 
-process_pdfs: $(PDFS)
+process_pdfs: $(PDFS) pdf_demux.py
 	@echo "Processing PDF files..."
 	@python pdf_demux.py
 	@touch process_pdfs

@@ -68,10 +68,10 @@ if __name__ == "__main__":
     all_args = []
 
     cpu_count = os.cpu_count()
-    if cpu_count is None:
+    if cpu_count is None or cpu_count < 4:
         max_workers = 1
     else:
-        max_workers = cpu_count // 4
+        max_workers = 4
 
     for pdf_file in tqdm(os.listdir(PDF_DIR)):
         if not pdf_file.endswith(".pdf"):
