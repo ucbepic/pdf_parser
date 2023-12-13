@@ -14,29 +14,20 @@
 
         /* Styles for PDF container */
         .pdf-container {
-            flex: 0 0 70%;
-            /* Assign 70% of the parent width to PDF container */
             position: relative;
-            height: 100vh;
-            /* Adjust the height as required */
             overflow-y: auto;
-            /* Enables vertical scrolling */
         }
 
         /* Styles for metadata container */
         .metadata {
             flex: 0 0 30%;
-            /* Assign 30% of the parent width to metadata container */
-            height: 100vh;
-            /* Adjust the height as required */
             overflow-y: auto;
-            /* Enables vertical scrolling */
-            padding: 1rem;
+            padding: 1rem 1rem 1rem 0.5rem;
+            /* reduces left padding to 0.5rem */
             box-sizing: border-box;
-            /* Ensures padding is included in width */
             border-left: 1px solid #ccc;
-            /* Separates metadata from the PDF visually */
         }
+
 
         /* Styles for overlay */
         .page-overlay {
