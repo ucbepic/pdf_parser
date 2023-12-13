@@ -8,6 +8,35 @@
     <title>Label PDF</title>
     <style>
         /* Add any additional styles here */
+        .content {
+            display: flex;
+        }
+
+        .data-container {
+            width: 300px;
+            /* Adjust width as needed */
+            overflow-y: auto;
+            /* Scroll metadata independently if needed */
+            height: 100vh;
+            /* Match viewport height or adjust as per PDF viewer */
+            border-left: 1px solid #ccc;
+            /* Separate visually from the PDF */
+        }
+
+        .pdf-container {
+            flex: 1;
+            /* Adjust if you need more control over the width */
+            overflow-y: scroll;
+            /* Enables scrolling if the PDF is taller than the viewport */
+        }
+
+        .metadata {
+            border-bottom: 1px solid #ccc;
+            /* Separates metadata for each page */
+            padding: 10px;
+            /* Add other styles as needed */
+        }
+
         #pdf-container {
             width: 100%;
             height: 100vh;
@@ -53,7 +82,8 @@
 
 <body>
     <button id="save-close-btn">Save & Close</button> <!-- Added button -->
-    <div id="pdf-container"></div>
+    <div id="pdf-container" class="pdf-container"></div>
+    <div class="data-container"></div>
     <script type="module">
         import * as pdfjsLib from "{{ url_for('static', filename='js/pdf.mjs') }}";
 
@@ -106,6 +136,7 @@
             try {
                 const pdf = await loadingTask.promise;
                 const container = document.getElementById('pdf-container');
+                const dataContainer = document.querySelector('.data-container'); // Select the data container
 
                 for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
                     const page = await pdf.getPage(pageNum);
@@ -139,16 +170,40 @@
                     wrapper.appendChild(canvas);
                     wrapper.appendChild(overlay);
                     container.appendChild(wrapper);
+
+                    // Fetch and display metadata for the current page
+                    const metadataText = await fetchPageMetadata(pageNum); // Implement this function
+
+                    // Create a new element for the metadata and append it to the data-container
+                    const metadataContainer = document.createElement('div');
+                    metadataContainer.classList.add('metadata');
+                    metadataContainer.id = 'metadata-page-' + pageNum;
+                    metadataContainer.textContent = metadataText;
+                    dataContainer.appendChild(metadataContainer);
                 }
             } catch (e) {
                 console.error('Error loading PDF:', e);
             }
         }
 
+        // Implement the fetchPageMetadata function to retrieve metadata
+        async function fetchPageMetadata(pageNum) {
+            try {
+                const response = await fetch(`/metadata-for-page/${pageNum}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const metadata = await response.json(); // Assuming metadata is JSON
+                return metadata.text; // Or process as needed based on your metadata structure
+            } catch (error) {
+                console.error('Fetching page metadata failed:', error);
+            }
+        }
+
         // Set the workerSrc property
         pdfjsLib.GlobalWorkerOptions.workerSrc = "{{ url_for('static', filename='js/pdf.worker.mjs') }}";
 
-        loadPdf();
+        document.addEventListener('DOMContentLoaded', loadPdf);
     </script>
 </body>
 
