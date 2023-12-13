@@ -82,6 +82,9 @@ if __name__ == "__main__":
 
     # Create a pool of workers and distribute the tasks
     print(f"Parallel processing over {max_workers} cores ...")
+    start_time = time.time()
     with Pool(max_workers) as pool:
         pool.starmap(process_page, all_args)
+    end_time = time.time()
+    print(f"Parallel processing took {end_time - start_time} seconds")
     print("Done!")
