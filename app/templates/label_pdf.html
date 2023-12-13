@@ -193,6 +193,7 @@
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const metadata = await response.json(); // Assuming metadata is JSON
+                console.log('Page metadata:', metadata);
                 return metadata.text; // Or process as needed based on your metadata structure
             } catch (error) {
                 console.error('Fetching page metadata failed:', error);
