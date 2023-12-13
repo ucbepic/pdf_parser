@@ -64,6 +64,5 @@ clean:
 	@find app/static/private/imgs -mindepth 1 -delete
 	@find app/static/private/txts -mindepth 1 -delete
 	@find app/static/private/ocr -mindepth 1 -delete
-	@rm infer
-	@rm process_pdfs
-	
+	@rm -f infer
+	@rm -f process_pdfs
