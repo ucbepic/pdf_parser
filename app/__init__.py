@@ -4,6 +4,7 @@ from PIL import Image
 import os
 import flor
 
+from .featurize import analyze_text
 
 app = Flask(__name__)
 
@@ -49,6 +50,8 @@ def index():
     return render_template("index.html", pdf_previews=pdf_previews)
 
 
+pdf_names = []
+
 @app.route("/view-pdf")
 def view_pdf():
     pdf_name = request.args.get("name")
@@ -56,7 +59,7 @@ def view_pdf():
         return "No file specified.", 400
 
     pdf_name = secure_filename(pdf_name)
-    save_colors_stack.append(pdf_name)
+    pdf_names.append(pdf_name)
 
     pdf_path = os.path.join(PDF_DIR, pdf_name)
 
@@ -67,20 +70,30 @@ def view_pdf():
         return "File not found.", 404
 
 
-save_colors_stack = []
-
-
 @app.route("/save_colors", methods=["POST"])
 def save_colors():
     j = request.get_json()
     colors = j.get("colors", [])
     # Process the colors here...
-    pdf_name = save_colors_stack.pop()
-    save_colors_stack.clear()
+    pdf_name = pdf_names.pop()
+    pdf_names.clear()
     flor.log("pdf_name", pdf_name)
     for color in flor.loop("colors", colors):
         print(f"Color: {flor.log('color', color)}")
     return jsonify({"message": "Colors saved successfully"}), 200
+
+@app.route('/metadata-for-page/<int:page_num>')
+def metadata_for_page(page_num: int):
+    # Retrieve metadata for the specified page number
+    # Identify the PDF that we're working with
+    pdf_name = pdf_names[-1]
+    metadata = {
+        "pdf_name": pdf_name,
+        "page_num": page_num
+    }
+
+    # Retrieve metadata for the specified page number
+    return jsonify(metadata)
 
 
 if __name__ == "__main__":
