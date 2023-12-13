@@ -18,16 +18,16 @@ model.pth: get_best_ckpt.py
 	@echo "Generating model..."
 	@python get_best_ckpt.py
 
-infer: model.pth
+infer: model.pth infer.py
 	@echo "Inferencing..."
 	@python infer.py
 	@touch infer
 
-train: process_pdfs
+train: process_pdfs train.py
 	@echo "Training..."
 	@python train.py
 
-apply_split:
+apply_split: apply_split.py
 	@echo "Applying split..."
 	@python apply_split.py
 	
@@ -52,7 +52,7 @@ ifeq ($(UNAME_S),Windows_NT)
 endif
 
 # Install dependencies from requirements.txt
-install: install_tesseract
+install: install_tesseract requirements.txt
 	@echo "Installing dependencies..."
 	@pip install -r requirements.txt
  
