@@ -7,82 +7,66 @@
     <meta charset="UTF-8">
     <title>Label PDF</title>
     <style>
-        /* Add any additional styles here */
+        /* Main layout styles */
         .content {
             display: flex;
         }
 
-        .data-container {
-            width: 300px;
-            /* Adjust width as needed */
-            overflow-y: auto;
-            /* Scroll metadata independently if needed */
-            height: 100vh;
-            /* Match viewport height or adjust as per PDF viewer */
-            border-left: 1px solid #ccc;
-            /* Separate visually from the PDF */
-        }
-
+        /* Styles for PDF container */
         .pdf-container {
-            flex: 1;
-            /* Adjust if you need more control over the width */
-            overflow-y: scroll;
-            /* Enables scrolling if the PDF is taller than the viewport */
-        }
-
-        .metadata {
-            border-bottom: 1px solid #ccc;
-            /* Separates metadata for each page */
-            padding: 10px;
-            /* Add other styles as needed */
-        }
-
-        #pdf-container {
-            width: 100%;
-            height: 100vh;
-            /* Adjust as needed */
+            flex: 0 0 70%;
+            /* Assign 70% of the parent width to PDF container */
             position: relative;
+            height: 100vh;
+            /* Adjust the height as required */
+            overflow-y: auto;
+            /* Enables vertical scrolling */
         }
 
+        /* Styles for metadata container */
+        .metadata {
+            flex: 0 0 30%;
+            /* Assign 30% of the parent width to metadata container */
+            height: 100vh;
+            /* Adjust the height as required */
+            overflow-y: auto;
+            /* Enables vertical scrolling */
+            padding: 1rem;
+            box-sizing: border-box;
+            /* Ensures padding is included in width */
+            border-left: 1px solid #ccc;
+            /* Separates metadata from the PDF visually */
+        }
+
+        /* Styles for overlay */
         .page-overlay {
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
+            width: 100%;
+            height: 100%;
             background-color: rgba(118, 42, 131, 0.2);
-            /* Initial overlay color */
+            /* Example overlay color */
         }
 
-        /* Style for the fixed button */
+        /* Style for the save and close button */
         #save-close-btn {
             position: fixed;
-            /* Fixed position */
             top: 10px;
-            /* Distance from the top */
             right: 10px;
-            /* Distance from the right */
             padding: 10px 20px;
-            /* Padding for aesthetic spacing */
             background-color: #007bff;
-            /* Bootstrap primary color for example */
             color: white;
-            /* Text color */
             border: none;
-            /* No border */
             border-radius: 5px;
-            /* Rounded corners */
             cursor: pointer;
-            /* Pointer cursor on hover */
             z-index: 1000;
-            /* Ensure it's above other items */
         }
     </style>
 </head>
 
 <body>
     <button id="save-close-btn">Save & Close</button> <!-- Added button -->
-    <div id="pdf-container" class="pdf-container"></div>
     <script type="module">
         import * as pdfjsLib from "{{ url_for('static', filename='js/pdf.mjs') }}";
 
@@ -134,7 +118,6 @@
 
             try {
                 const pdf = await loadingTask.promise;
-                const container = document.getElementById('pdf-container');
 
                 for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
                     const page = await pdf.getPage(pageNum);
@@ -163,21 +146,26 @@
                         };
                     })();
 
-                    const wrapper = document.createElement('div');
-                    wrapper.style.position = 'relative';
-                    wrapper.appendChild(canvas);
-                    wrapper.appendChild(overlay);
-                    container.appendChild(wrapper);
+                    const pdfWrapper = document.createElement('div');
+                    pdfWrapper.className = 'pdf-container';
+                    pdfWrapper.appendChild(canvas);
+                    pdfWrapper.appendChild(overlay);
 
                     // Fetch and display metadata for the current page
                     const metadataText = await fetchPageMetadata(pageNum); // Implement this function
 
                     // Create a new element for the metadata and append it to the data-container
-                    const metadataContainer = document.createElement('div');
-                    metadataContainer.classList.add('data-container');
-                    metadataContainer.id = 'metadata-page-' + pageNum;
-                    metadataContainer.textContent = json.stringify(metadataText);
-                    container.appendChild(metadataContainer);
+                    const metadataWrapper = document.createElement('div');
+                    metadataWrapper.className = 'metadata';
+                    metadataWrapper.id = 'metadata-page-' + pageNum;
+                    metadataWrapper.textContent = JSON.stringify(metadataText);
+
+                    const container = document.createElement('div');
+                    container.className = 'content';
+                    container.appendChild(pdfWrapper);
+                    container.appendChild(metadataWrapper);
+
+                    document.body.appendChild(container);
                 }
             } catch (e) {
                 console.error('Error loading PDF:', e);
