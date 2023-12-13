@@ -174,10 +174,9 @@
 
                     // Create a new element for the metadata and append it to the data-container
                     const metadataContainer = document.createElement('div');
-                    metadataContainer.classList.add('metadata');
                     metadataContainer.classList.add('data-container');
                     metadataContainer.id = 'metadata-page-' + pageNum;
-                    metadataContainer.textContent = metadataText;
+                    metadataContainer.textContent = json.stringify(metadataText);
                     container.appendChild(metadataContainer);
                 }
             } catch (e) {
@@ -194,7 +193,7 @@
                 }
                 const metadata = await response.json(); // Assuming metadata is JSON
                 console.log('Page metadata:', metadata);
-                return metadata.text; // Or process as needed based on your metadata structure
+                return metadata // Or process as needed based on your metadata structure
             } catch (error) {
                 console.error('Fetching page metadata failed:', error);
             }
