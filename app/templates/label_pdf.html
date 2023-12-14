@@ -143,7 +143,7 @@
                     pdfWrapper.appendChild(overlay);
 
                     // Fetch and display metadata for the current page
-                    const metadataText = await fetchPageMetadata(pageNum); // Implement this function
+                    const metadataText = await fetchPageMetadata(pageNum - 1); // Implement this function
 
                     // Create a new element for the metadata and append it to the data-container
                     const metadataWrapper = document.createElement('div');

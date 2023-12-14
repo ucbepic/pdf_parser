@@ -74,12 +74,13 @@ def save_colors():
 
 @app.route('/metadata-for-page/<int:page_num>')
 def metadata_for_page(page_num: int):
+    print(f"Page number: {page_num}")
     # Retrieve metadata for the specified page number
     metadata = {"page_num": page_num}
     # Identify the PDF that we're working with
     metadata["pdf_name"] = pdf_names[-1]
     # Construct path to the text file
-    txt_name = os.path.join(TXT_DIR, os.path.splitext(os.path.basename(metadata["pdf_name"]))[0], f"page_{page_num}.txt")
+    txt_name = os.path.join(TXT_DIR, os.path.splitext(os.path.basename(metadata["pdf_name"]))[0], f"page_{page_num - 1}.txt")
     # Analyze the text on the page
     headings, page_numbers = analyze_text(txt_name)
     # Add the results to the metadata dictionary
@@ -87,7 +88,7 @@ def metadata_for_page(page_num: int):
     metadata["txt-page_numbers"] = page_numbers
 
     # Construct path to the OCR file
-    ocr_name = os.path.join(OCR_DIR, os.path.splitext(os.path.basename(metadata["pdf_name"]))[0], f"page_{page_num}.json")
+    ocr_name = os.path.join(OCR_DIR, os.path.splitext(os.path.basename(metadata["pdf_name"]))[0], f"page_{page_num}.txt")
     # Analyze the ocr on the page
     headings, page_numbers = analyze_text(ocr_name)
     # Add the results to the metadata dictionary
