@@ -96,8 +96,10 @@ def metadata_for_page(page_num: int):
     metadata.append({"ocr-headings": headings})
     metadata.append({"ocr-page_numbers": page_numbers})
 
-    metadata.append({"txt-text": txt_text})
-    metadata.append({"ocr-text": ocr_text})
+    if len(txt_text) < len(ocr_text) // 2 or len(txt_text.strip()) < len(txt_text) * 3 // 4:
+        metadata.append({"ocr-text": ocr_text})
+    else:
+        metadata.append({"txt-text": txt_text})
 
     # Retrieve metadata for the specified page number
     return jsonify(metadata)

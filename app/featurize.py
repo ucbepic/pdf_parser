@@ -3,7 +3,7 @@ import re
 
 
 def analyze_text(text_file):
-    with open(text_file, 'r') as file:
+    with open(text_file, 'r', encoding="utf-8") as file:
         text = file.read()
 
     # Example pattern for detecting headings (e.g., all caps)
@@ -15,4 +15,3 @@ def analyze_text(text_file):
     # Other analysis can be added here
 
     return headings, page_numbers, text 
-
