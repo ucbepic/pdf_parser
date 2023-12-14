@@ -14,5 +14,5 @@ def analyze_text(text_file):
 
     # Other analysis can be added here
 
-    return headings, page_numbers 
+    return headings, page_numbers, text 
 

@@ -21,7 +21,8 @@
         /* Styles for metadata container */
         .metadata {
             flex: 0 0 25%;
-            overflow-y: auto;
+            overflow: scroll;
+            max-height: inherit;
             padding: 1rem 1rem 1rem 0.5rem;
             /* reduces left padding to 0.5rem */
             box-sizing: border-box;
@@ -143,16 +144,25 @@
                     pdfWrapper.appendChild(overlay);
 
                     // Fetch and display metadata for the current page
-                    const metadataText = await fetchPageMetadata(pageNum - 1); // Implement this function
+                    const metadata = await fetchPageMetadata(pageNum - 1); // Implement this function
 
                     // Create a new element for the metadata and append it to the data-container
                     const metadataWrapper = document.createElement('div');
                     metadataWrapper.className = 'metadata';
-                    metadataWrapper.id = 'metadata-page-' + pageNum;
-                    metadataWrapper.textContent = JSON.stringify(metadataText);
+                    metadataWrapper.id = 'metadata-page-' + (pageNum - 1);
+                    for (const item of metadata) {
+                        for (const key in item) {
+                            if (item.hasOwnProperty(key)) {
+                                const data = document.createElement('p');
+                                data.innerHTML = '<strong>' + key + '</strong>: ' + item[key];
+                                metadataWrapper.appendChild(data);
+                            }
+                        }
+                    }
 
                     const container = document.createElement('div');
                     container.className = 'content';
+                    container.style.maxHeight = `${viewport.height}px`;
                     container.appendChild(pdfWrapper);
                     container.appendChild(metadataWrapper);
 
@@ -171,7 +181,6 @@
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const metadata = await response.json(); // Assuming metadata is JSON
-                console.log('Page metadata:', metadata);
                 return metadata // Or process as needed based on your metadata structure
             } catch (error) {
                 console.error('Fetching page metadata failed:', error);
