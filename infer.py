@@ -29,12 +29,14 @@ if __name__ == "__main__":
     from train import model, device, transform
 
     if os.path.exists("model.pth"):
+        # Load model
         state_dict = torch.load("model.pth", map_location=device)
         model.load_state_dict(state_dict)
         model = model.to(device)
         model.eval()
         print("Model loaded")
     if os.path.exists(IMGS_DIR):
+        # Loop through all files in directory
         for file in flor.loop("docs", list_files_in_directory(IMGS_DIR)):
             full_path = get_full_path(IMGS_DIR, file)
             if not is_directory(full_path):
