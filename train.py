@@ -1,6 +1,4 @@
 import os
-import time
-import copy
 import flor
 import torch
 import torch.optim as optim
@@ -8,7 +6,6 @@ from torch.optim import lr_scheduler
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 from PIL import Image
-import pandas as pd
 from torchvision import transforms
 from torchvision.models import resnet18, ResNet18_Weights
 from sklearn.model_selection import train_test_split
