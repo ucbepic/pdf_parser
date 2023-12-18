@@ -9,7 +9,8 @@ import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 from PIL import Image
 import pandas as pd
-from torchvision import transforms, models
+from torchvision import transforms
+from torchvision.models import resnet18, ResNet18_Weights
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import recall_score
 
@@ -41,18 +42,14 @@ class PDFPagesDataset(Dataset):
             image = self.transform(image)
 
         return image, label
-    
+
+
 # Model
-model = models.resnet18(pretrained=True)
+model = resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
 
 # Modify the final layer of ResNet18 Model for our binary classification problem
 num_ftrs = model.fc.in_features
 model.fc = torch.nn.Linear(num_ftrs, 2)
-
-# Move the model to GPU if available
-device = flor.arg("device", "mps" if torch.backends.mps.is_available() else ("cuda" if torch.cuda.is_available() else "cpu"))
-device = torch.device(device)
-model = model.to(device)
 
 # Freeze early layers of the model
 for param in model.parameters():
@@ -60,7 +57,7 @@ for param in model.parameters():
 
 for param in model.fc.parameters():
     param.requires_grad = True
-    
+
 # Define your transformations
 transform = transforms.Compose(
     [
@@ -72,18 +69,23 @@ transform = transforms.Compose(
 )
 
 if __name__ == "__main__":
+    # Move the model to GPU if available
+    from constants import device
+
+    device = torch.device(flor.arg("device", device))
+    model = model.to(device)
 
     training_data = flor.pivot("page_path", "first_page")
     training_data["page_path"] = training_data["page_path"].apply(os.path.relpath)
     training_data = training_data[training_data["filename"] == "infer.py"]
-    training_data = training_data[training_data["tstamp"] == training_data["tstamp"].max()]
+    training_data = training_data[
+        training_data["tstamp"] == training_data["tstamp"].max()
+    ]
     # print(training_data.head(n=len(training_data)))
 
     test_size = flor.arg("test_size", 0.2)
     train_data, val_data = train_test_split(training_data, test_size=test_size)
     print(val_data.head(n=len(val_data)))
-
-
 
     train_dataset = PDFPagesDataset(dataframe=train_data, transform=transform)
     val_dataset = PDFPagesDataset(dataframe=val_data, transform=transform)
@@ -98,7 +100,9 @@ if __name__ == "__main__":
     criterion = nn.CrossEntropyLoss(weight=w)
     optimizer = optim.Adam(model.fc.parameters(), lr=flor.arg("lr", 0.001))
     exp_lr_scheduler = lr_scheduler.StepLR(
-        optimizer, step_size=flor.arg("lr_step_size", 7), gamma=flor.arg("lr_gamma", 0.1)
+        optimizer,
+        step_size=flor.arg("lr_step_size", 7),
+        gamma=flor.arg("lr_gamma", 0.1),
     )
 
     num_epochs = flor.arg("num_epochs", 25)
@@ -138,7 +142,6 @@ if __name__ == "__main__":
                 all_labels.extend(labels.cpu().numpy())
                 all_preds.extend(preds.cpu().numpy())
 
-
             epoch_loss = running_loss / len(train_dataset)
             flor.log("train_loss", float(epoch_loss))
             epoch_acc = running_corrects.float() / len(train_dataset)  # type: ignore
@@ -172,7 +175,6 @@ if __name__ == "__main__":
                 running_corrects += torch.sum(preds == labels.data)
                 all_labels.extend(labels.cpu().numpy())
                 all_preds.extend(preds.cpu().numpy())
-
 
             epoch_loss = running_loss / len(val_dataset)
             flor.log("val_loss", float(epoch_loss))

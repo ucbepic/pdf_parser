@@ -26,7 +26,10 @@ def get_full_path(directory, file):
 
 
 if __name__ == "__main__":
-    from train import model, device, transform
+    from constants import device
+    from train import model, transform
+
+    device = torch.device(flor.arg("device", device))
 
     if os.path.exists("model.pth"):
         # Load model
