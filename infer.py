@@ -15,10 +15,9 @@ if __name__ == "__main__":
         state_dict = torch.load("model.pth", map_location=device)
         model.load_state_dict(state_dict)
 
-    model = model.to(device)
-    model.eval()
-
     if os.path.exists(IMGS_DIR):
+        model = model.to(device)
+        model.eval()
         imgs_dir = [
             os.path.join(os.path.abspath(IMGS_DIR), fn) for fn in os.listdir(IMGS_DIR)
         ]
@@ -30,7 +29,6 @@ if __name__ == "__main__":
                 key=lambda fn: int((os.path.splitext(fn)[0]).replace("page_", "")),
             )
             for i, image_path in flor.loop("page", enumerate(pages_dir)):
-                print("Predicting...")
                 flor.log("page_path", image_path)
                 image = Image.open(image_path)
                 input_tensor = transform(image).unsqueeze(0).to(device)  # type: ignore
