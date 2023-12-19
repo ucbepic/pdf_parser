@@ -67,7 +67,7 @@ transform = transforms.Compose(
 
 if __name__ == "__main__":
     # Move the model to GPU if available
-    from constants import device
+    from config import device
 
     device = torch.device(flor.arg("device", device))
     model = model.to(device)

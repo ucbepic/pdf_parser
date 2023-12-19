@@ -7,5 +7,8 @@ elif torch.cuda.is_available():
 else:
     device = "cpu"
 
-__all__ = ["device"]
+# infer.py schema
+first_page = "first_page"
+page_path = "page_path"
 
+__all__ = ["device", "first_page", "page_path"]

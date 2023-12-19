@@ -5,7 +5,7 @@ import torch
 from PIL import Image
 
 if __name__ == "__main__":
-    from constants import device
+    from config import device, page_path, first_page
     from train import model, transform
 
     # Set the device for running the model
@@ -38,7 +38,7 @@ if __name__ == "__main__":
                 key=lambda fn: int((os.path.splitext(fn)[0]).replace("page_", "")),
             )
             for i, image_path in flor.loop("page", enumerate(pages_dir)):
-                flor.log("page_path", image_path)  # Logging the path of each image/page
+                flor.log(page_path, image_path)  # Logging the path of each image/page
                 # Open the image and apply transformations
                 image = Image.open(image_path)
                 # Convert image to tensor
@@ -54,4 +54,4 @@ if __name__ == "__main__":
                         predicted.item()
                     )  # Extract the predicted label (integer index)
                 # Log the predicted label, with special handling for the first page
-                flor.log("first_page", 1 if i == 0 else int(predicted_label))
+                flor.log(first_page, 1 if i == 0 else int(predicted_label))
