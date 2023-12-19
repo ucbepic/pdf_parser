@@ -4,27 +4,6 @@ import flor
 import torch
 from PIL import Image
 
-
-def parse_page(filename):
-    fn, _ = os.path.splitext(filename)
-    return int(fn.replace("page_", ""))
-
-
-def list_files_in_directory(directory, key=None):
-    if key:
-        return sorted(os.listdir(directory), key=key)
-    else:
-        return sorted(os.listdir(directory))
-
-
-def is_directory(path):
-    return os.path.isdir(path)
-
-
-def get_full_path(directory, file):
-    return os.path.join(os.path.abspath(directory), file)
-
-
 if __name__ == "__main__":
     from constants import device
     from train import model, transform
@@ -38,28 +17,26 @@ if __name__ == "__main__":
 
     model = model.to(device)
     model.eval()
-    
+
     if os.path.exists(IMGS_DIR):
-        # Loop through all files in directory
-        for file in flor.loop("docs", list_files_in_directory(IMGS_DIR)):
-            full_path = get_full_path(IMGS_DIR, file)
-            if not is_directory(full_path):
-                continue
-            for i, file2 in flor.loop(
-                "pages", enumerate(list_files_in_directory(full_path, key=parse_page))
-            ):
-                image_path = os.path.join(full_path, file2)
+        imgs_dir = [
+            os.path.join(os.path.abspath(IMGS_DIR), fn) for fn in os.listdir(IMGS_DIR)
+        ]
+        imgs_dir = [fp for fp in imgs_dir if os.path.isdir(fp)]
+        for abs_path in flor.loop("doc", sorted(imgs_dir)):
+            pages_dir = [os.path.join(abs_path, pn) for pn in os.listdir(abs_path)]
+            pages_dir = sorted(
+                pages_dir,
+                key=lambda fn: int((os.path.splitext(fn)[0]).replace("page_", "")),
+            )
+            for i, image_path in flor.loop("page", enumerate(pages_dir)):
+                print("Predicting...")
                 flor.log("page_path", image_path)
-                if model:
-                    print("Predicting...")
-                    image = Image.open(image_path)
-                    input_tensor = transform(image).unsqueeze(0).to(device)  # type: ignore
-                    with torch.no_grad():
-                        output = model(input_tensor)
-                        _, predicted = torch.max(output.data, 1)
-                        predicted_label = predicted.item()
-                        print(predicted_label)
-                    flor.log("first_page", 1 if i == 0 else int(predicted_label))
-                else:
-                    print("Defaulting...")
-                    flor.log("first_page", 1 if i == 0 else 0)
+                image = Image.open(image_path)
+                input_tensor = transform(image).unsqueeze(0).to(device)  # type: ignore
+                # TODO: inference in batches
+                with torch.no_grad():
+                    output = model(input_tensor)
+                    _, predicted = torch.max(output.data, 1)
+                    predicted_label = predicted.item()
+                flor.log("first_page", 1 if i == 0 else int(predicted_label))
