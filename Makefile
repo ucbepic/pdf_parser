@@ -27,9 +27,9 @@ train: process_pdfs train.py
 	@echo "Training..."
 	@python train.py
 
-apply_split: apply_split.py
+apply_split: split.py
 	@echo "Applying split..."
-	@python apply_split.py
+	@python split.py
 	
 
 # Run the Flask development server
