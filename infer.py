@@ -23,7 +23,7 @@ if __name__ == "__main__":
             os.path.join(os.path.abspath(IMGS_DIR), fn) for fn in os.listdir(IMGS_DIR)
         ]
         imgs_dir = [fp for fp in imgs_dir if os.path.isdir(fp)]
-        for abs_path in flor.loop("doc", sorted(imgs_dir)):
+        for abs_path in flor.loop("document", sorted(imgs_dir)):
             pages_dir = [os.path.join(abs_path, pn) for pn in os.listdir(abs_path)]
             pages_dir = sorted(
                 pages_dir,
