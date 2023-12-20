@@ -6,7 +6,7 @@ import flor
 
 from .featurize import analyze_text
 
-import constants as const
+from . import constants as const
 from .constants import PDF_DIR, IMGS_DIR, TXT_DIR, OCR_DIR
 
 
