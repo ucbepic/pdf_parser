@@ -5,11 +5,12 @@ import os
 import flor
 
 from .featurize import analyze_text
+
+import constants as const
 from .constants import PDF_DIR, IMGS_DIR, TXT_DIR, OCR_DIR
 
+
 app = Flask(__name__)
-
-
 
 
 def resize_image(image_path, size=(300, 400)):
@@ -42,6 +43,7 @@ def index():
 
 pdf_names = []
 
+
 @app.route("/view-pdf")
 def view_pdf():
     pdf_name = request.args.get("name")
@@ -67,12 +69,13 @@ def save_colors():
     # Process the colors here...
     pdf_name = pdf_names.pop()
     pdf_names.clear()
-    flor.log("pdf_name", pdf_name)
-    for color in flor.loop("colors", colors):
-        print(f"Color: {flor.log('color', color)}")
+    flor.log(const.pdf_name, pdf_name)
+    for c in flor.loop("color", colors):
+        flor.log(const.page_color, c)
     return jsonify({"message": "Colors saved successfully"}), 200
 
-@app.route('/metadata-for-page/<int:page_num>')
+
+@app.route("/metadata-for-page/<int:page_num>")
 def metadata_for_page(page_num: int):
     # Retrieve metadata for the specified page number
     metadata = [{"page_num": page_num}]
@@ -80,7 +83,9 @@ def metadata_for_page(page_num: int):
     pdf_name = pdf_names[-1]
     metadata.append({"pdf_name": pdf_name})
     # Construct path to the text file
-    txt_name = os.path.join(TXT_DIR, os.path.splitext(os.path.basename(pdf_name))[0], f"page_{page_num}.txt")
+    txt_name = os.path.join(
+        TXT_DIR, os.path.splitext(os.path.basename(pdf_name))[0], f"page_{page_num}.txt"
+    )
     # Analyze the text on the page
     headings, page_numbers, txt_text = analyze_text(txt_name)
     # Add the results to the metadata dictionary
@@ -89,14 +94,19 @@ def metadata_for_page(page_num: int):
     metadata.append({"txt-page_numbers": page_numbers})
 
     # Construct path to the OCR file
-    ocr_name = os.path.join(OCR_DIR, os.path.splitext(os.path.basename(pdf_name))[0], f"page_{page_num}.txt")
+    ocr_name = os.path.join(
+        OCR_DIR, os.path.splitext(os.path.basename(pdf_name))[0], f"page_{page_num}.txt"
+    )
     # Analyze the ocr on the page
     headings, page_numbers, ocr_text = analyze_text(ocr_name)
     # Add the results to the metadata dictionary
     metadata.append({"ocr-headings": headings})
     metadata.append({"ocr-page_numbers": page_numbers})
 
-    if len(txt_text) < len(ocr_text) // 2 or len(txt_text.strip()) < len(txt_text) * 3 // 4:
+    if (
+        len(txt_text) < len(ocr_text) // 2
+        or len(txt_text.strip()) < len(txt_text) * 3 // 4
+    ):
         metadata.append({"ocr-text": ocr_text})
     else:
         metadata.append({"txt-text": txt_text})
