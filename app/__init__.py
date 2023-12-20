@@ -46,6 +46,7 @@ pdf_names = []
 
 @app.route("/view-pdf")
 def view_pdf():
+    # TODO: Read your own writes from /save_colors
     pdf_name = request.args.get("name")
     if not pdf_name:
         return "No file specified.", 400
