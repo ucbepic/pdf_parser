@@ -35,7 +35,9 @@ if __name__ == "__main__":
             # Sort the pages to maintain the correct order
             pages_dir = sorted(
                 pages_dir,
-                key=lambda fn: int((os.path.splitext(fn)[0]).replace("page_", "")),
+                key=lambda fn: int(
+                    (os.path.splitext(os.path.basename(fn))[0]).replace("page_", "")
+                ),
             )
             for i, image_path in flor.loop("page", enumerate(pages_dir)):
                 flor.log(page_path, image_path)  # Logging the path of each image/page
