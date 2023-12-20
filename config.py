@@ -14,4 +14,5 @@ page_path = "page_path"
 # WebApp schema
 from app.constants import pdf_name, page_color
 
+
 __all__ = ["device", "first_page", "page_path", "pdf_name", "page_color"]

@@ -70,7 +70,7 @@ def save_colors():
     pdf_name = pdf_names.pop()
     pdf_names.clear()
     flor.log(const.pdf_name, pdf_name)
-    for c in flor.loop("color", colors):
+    for c in flor.loop("page", colors):
         flor.log(const.page_color, c)
     return jsonify({"message": "Colors saved successfully"}), 200
 
