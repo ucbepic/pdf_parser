@@ -47,6 +47,9 @@ pdf_names = []
 @app.route("/view-pdf")
 def view_pdf():
     # TODO: Read your own writes from /save_colors
+    #   test-cases:
+    #       - default behavior: no colors saved
+    #       - save colors for one document & re-open
     pdf_name = request.args.get("name")
     if not pdf_name:
         return "No file specified.", 400
