@@ -48,7 +48,8 @@ def get_colors():
         colors = colors[colors["pdf_name"] == pdf_names[-1]]
         # Sort colors by `page` ascending
         colors = colors.sort_values("page")
-        return colors["page_color"].tolist()
+        # cast to list of ints
+        return colors["page_color"].astype(int).tolist()
 
 
 @app.route("/view-pdf")
