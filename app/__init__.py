@@ -11,6 +11,7 @@ from .constants import PDF_DIR, IMGS_DIR, TXT_DIR, OCR_DIR
 
 
 app = Flask(__name__)
+pdf_names = []
 
 
 def resize_image(image_path, size=(300, 400)):
@@ -41,7 +42,13 @@ def index():
     return render_template("index.html", pdf_previews=pdf_previews)
 
 
-pdf_names = []
+def get_colors():
+    colors = flor.utils.latest(flor.pivot("pdf_name", "page_color"))
+    if colors:
+        colors = colors[colors["pdf_name"] == pdf_names[-1]]
+        # Sort colors by `page` ascending
+        colors = colors.sort_values("page")
+        return colors["page_color"].tolist()
 
 
 @app.route("/view-pdf")
@@ -50,6 +57,7 @@ def view_pdf():
     #   test-cases:
     #       - default behavior: no colors saved
     #       - save colors for one document & re-open
+    # TODO: Display the PNG not the PDF. Easier overlay.
     pdf_name = request.args.get("name")
     if not pdf_name:
         return "No file specified.", 400
@@ -60,8 +68,8 @@ def view_pdf():
     pdf_path = os.path.join(PDF_DIR, pdf_name)
 
     if os.path.isfile(pdf_path):
-        # Render the label_pdf.html template with the PDF name
-        return render_template("label_pdf.html", pdf_name=pdf_name)
+        # Render the label_pdf.html template with the PDF name and get_colors()
+        return render_template("label_pdf.html", pdf_name=pdf_name, colors=get_colors())
     else:
         return "File not found.", 404
 

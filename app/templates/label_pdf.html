@@ -63,6 +63,18 @@
         import * as pdfjsLib from "{{ url_for('static', filename='js/pdf.mjs') }}";
 
         const color_wheel = ['rgba(118, 42, 131, 0.2)', 'rgba(175, 141, 195, 0.2)', 'rgba(231, 212, 232, 0.2)', 'rgba(217, 240, 211, 0.2)', 'rgba(127, 191, 123, 0.2)', 'rgba(27, 120, 55, 0.2)'];
+        // Get the colors array from the server, handle None case
+        const colorIndices = JSON.parse("{{ colors | tojson | safe }}");
+
+        // Function to get the color for a given page
+        function getColorForPage(pageIndex) {
+            if (!colorIndices || colorIndices.length === 0) {
+                // Handle the case where colors are None or empty
+                return color_wheel[0]; // Define a default color
+            }
+            return color_wheel[colorIndices[pageIndex]];
+        }
+
         // Add event listener to button
         document.getElementById('save-close-btn').addEventListener('click', function () {
             // Get all the overlays
@@ -130,8 +142,10 @@
                     overlay.className = 'page-overlay';
                     overlay.style.height = `${viewport.height}px`;
                     overlay.style.width = `${viewport.width}px`;
+                    overlay.style.backgroundColor = getColorForPage(pageNum - 1);
                     overlay.onclick = (function () {
-                        var i = 1;
+                        // get the value from colorIndices if not null
+                        let i = colorIndices ? colorIndices[pageNum - 1] + 1 : 1;
                         return function () {
                             this.style.backgroundColor = color_wheel[i % color_wheel.length];
                             i++;
