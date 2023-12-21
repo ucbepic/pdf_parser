@@ -54,10 +54,6 @@ def get_colors():
 
 @app.route("/view-pdf")
 def view_pdf():
-    # TODO: Read your own writes from /save_colors
-    #   test-cases:
-    #       - default behavior: no colors saved
-    #       - save colors for one document & re-open
     # TODO: Display the PNG not the PDF. Easier overlay.
     pdf_name = request.args.get("name")
     if not pdf_name:

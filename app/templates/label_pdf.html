@@ -65,8 +65,7 @@
 
         const color_wheel = ['rgba(118, 42, 131, 0.2)', 'rgba(175, 141, 195, 0.2)', 'rgba(231, 212, 232, 0.2)', 'rgba(217, 240, 211, 0.2)', 'rgba(127, 191, 123, 0.2)', 'rgba(27, 120, 55, 0.2)'];
         // Get the colors array from the server, handle None case
-        // const colorIndices = JSON.parse("{{ colors | tojson | safe }}");
-        var colorIndices = JSON.parse(`{{ colors | tojson | safe }}`);
+        var colorIndices = eval("{{ colors | tojson | safe }}");
         console.log(colorIndices);
 
 
@@ -121,7 +120,7 @@
         });
 
         async function loadPdf() {
-            const url = `{{ url_for('static', filename='private/pdfs/' + pdf_name) }}`;
+            const url = "{{ url_for('static', filename='private/pdfs/' + pdf_name) }}";
             const loadingTask = pdfjsLib.getDocument(url);
 
             try {
