@@ -44,7 +44,7 @@ def index():
 
 def get_colors():
     colors = flor.utils.latest(flor.pivot("pdf_name", "page_color"))
-    if colors:
+    if not colors.empty:
         colors = colors[colors["pdf_name"] == pdf_names[-1]]
         # Sort colors by `page` ascending
         colors = colors.sort_values("page")
