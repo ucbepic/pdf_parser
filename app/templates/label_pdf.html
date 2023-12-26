@@ -148,9 +148,12 @@
                     overlay.style.backgroundColor = getColorForPage(pageNum - 1);
                     overlay.onclick = (function () {
                         // get the value from colorIndices if not null
-                        let i = colorIndices ? colorIndices[pageNum - 1] + 1 : 1;
+                        // var i = colorIndices ? colorIndices[pageNum - 1] + 1 : 1;
+                        var i = (colorIndices && colorIndices.length > 0) ? colorIndices[pageNum - 1] + 1 : 1;
                         return function () {
-                            this.style.backgroundColor = color_wheel[i % color_wheel.length];
+                            console.log("overlay clicked")
+                            console.log(i);
+                            overlay.style.backgroundColor = color_wheel[i % color_wheel.length];
                             i++;
                         };
                     })();
