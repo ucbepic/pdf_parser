@@ -14,9 +14,9 @@ process_pdfs: $(PDFS) pdf_demux.py
 	@python pdf_demux.py
 	@touch process_pdfs
 
-model.pth: get_best_ckpt.py
+model.pth: export_ckpt.py
 	@echo "Generating model..."
-	@python get_best_ckpt.py
+	@python export_ckpt.py
 
 infer: model.pth infer.py
 	@echo "Inferencing..."
