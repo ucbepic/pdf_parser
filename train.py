@@ -11,7 +11,7 @@ from torchvision.models import resnet18, ResNet18_Weights
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import recall_score
 
-from . import config
+import config
 
 
 class PDFPagesDataset(Dataset):

@@ -1,5 +1,5 @@
 import flor
-from . import config
+import config
 
 exp_history = flor.pivot(config.val_acc, config.val_loss, config.val_recall)
 # Only keep the first experiment
