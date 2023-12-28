@@ -7,6 +7,14 @@ elif torch.cuda.is_available():
 else:
     device = "cpu"
 
+# train.py schema
+train_loss = "train_loss"
+train_acc = "train_acc"
+train_recall = "train_recall"
+val_acc = "val_acc"
+val_loss = "val_loss"
+val_recall = "val_recall"
+
 # infer.py schema
 first_page = "first_page"
 page_path = "page_path"

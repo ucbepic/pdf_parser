@@ -11,6 +11,8 @@ from torchvision.models import resnet18, ResNet18_Weights
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import recall_score
 
+from . import config
+
 
 class PDFPagesDataset(Dataset):
     def __init__(self, dataframe, transform=None):
@@ -67,9 +69,7 @@ transform = transforms.Compose(
 
 if __name__ == "__main__":
     # Move the model to GPU if available
-    from config import device
-
-    device = torch.device(flor.arg("device", device))
+    device = torch.device(flor.arg("device", config.device))
     model = model.to(device)
 
     training_data = flor.pivot("page_path", "first_page")
@@ -140,11 +140,11 @@ if __name__ == "__main__":
                 all_preds.extend(preds.cpu().numpy())
 
             epoch_loss = running_loss / len(train_dataset)
-            flor.log("train_loss", float(epoch_loss))
+            flor.log(config.train_loss, float(epoch_loss))
             epoch_acc = running_corrects.float() / len(train_dataset)  # type: ignore
-            flor.log("train_acc", float(epoch_acc))
+            flor.log(config.train_acc, float(epoch_acc))
             train_recall = recall_score(all_labels, all_preds)
-            flor.log("train_recall", float(train_recall))
+            flor.log(config.train_recall, float(train_recall))
 
             # do validate
             model.eval()
@@ -174,12 +174,12 @@ if __name__ == "__main__":
                 all_preds.extend(preds.cpu().numpy())
 
             epoch_loss = running_loss / len(val_dataset)
-            flor.log("val_loss", float(epoch_loss))
+            flor.log(config.val_loss, float(epoch_loss))
             epoch_acc = running_corrects.float() / len(val_dataset)  # type: ignore
-            flor.log("val_acc", float(epoch_acc))
+            flor.log(config.val_acc, float(epoch_acc))
 
             # Calculate recall at the end of the epoch
             val_recall = recall_score(all_labels, all_preds)
-            flor.log("val_recall", float(val_recall))
+            flor.log(config.val_recall, float(val_recall))
 
             exp_lr_scheduler.step()

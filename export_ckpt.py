@@ -1,12 +1,11 @@
 import flor
+from . import config
 
-exp_history = flor.pivot("val_acc", "val_loss")
+exp_history = flor.pivot(config.val_acc, config.val_loss, config.val_recall)
 # Only keep the first experiment
 exp_history = exp_history[exp_history["tstamp"] <= exp_history["tstamp"].min()]
-# Sort by val_acc
-exp_history = exp_history.sort_values("val_acc", ascending=False)
-# Sort by val_loss
-exp_history = exp_history.sort_values("val_loss", ascending=True)
+# Sort by val_recall
+exp_history = exp_history.sort_values(config.val_recall, ascending=False)
 print(exp_history.head(5))
 
 import os
