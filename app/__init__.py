@@ -52,13 +52,11 @@ def get_colors():
     if not infer.empty:
         webapp = flor.pivot(c.pdf_name, c.page_color)
         webapp = flor.utils.latest(webapp[webapp["pdf_name"] == pdf_names[-1]])
-        # Sort colors by `page` ascending
         webapp = webapp.sort_values("page")
         if not webapp.empty:
             if any(
                 infer["tstamp"].drop_duplicates() > webapp["tstamp"].drop_duplicates()
             ):
-                # cast to list of ints
                 return (infer[c.first_page].astype(int).cumsum() - 1).tolist()
             else:
                 return webapp["page_color"].astype(int).tolist()
