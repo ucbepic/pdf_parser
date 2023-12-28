@@ -9,7 +9,6 @@ from .featurize import analyze_text
 from . import constants as const
 from .constants import PDF_DIR, IMGS_DIR, TXT_DIR, OCR_DIR
 
-
 app = Flask(__name__)
 pdf_names = []
 
@@ -43,13 +42,28 @@ def index():
 
 
 def get_colors():
-    colors = flor.utils.latest(flor.pivot("pdf_name", "page_color"))
-    if not colors.empty:
-        colors = colors[colors["pdf_name"] == pdf_names[-1]]
+    from .. import config as c
+
+    infer = flor.pivot(c.first_page, c.page_path)
+    infer = flor.utils.latest(
+        infer[infer[c.page_path].map(lambda x: os.path.splitext(pdf_names[-1])[0] in x)]
+    )
+    infer = infer.sort_values("page")
+    if not infer.empty:
+        webapp = flor.pivot(c.pdf_name, c.page_color)
+        webapp = flor.utils.latest(webapp[webapp["pdf_name"] == pdf_names[-1]])
         # Sort colors by `page` ascending
-        colors = colors.sort_values("page")
-        # cast to list of ints
-        return colors["page_color"].astype(int).tolist()
+        webapp = webapp.sort_values("page")
+        if not webapp.empty:
+            if any(
+                infer["tstamp"].drop_duplicates() > webapp["tstamp"].drop_duplicates()
+            ):
+                # cast to list of ints
+                return (infer[c.first_page].astype(int).cumsum() - 1).tolist()
+            else:
+                return webapp["page_color"].astype(int).tolist()
+        else:
+            return (infer[c.first_page].astype(int).cumsum() - 1).tolist()
 
 
 @app.route("/view-pdf")
