@@ -94,6 +94,7 @@ def save_colors():
     flor.log(const.pdf_name, pdf_name)
     for c in flor.loop("page", colors):
         flor.log(const.page_color, c)
+    flor.commit()
     return "OK", 200
 
 
