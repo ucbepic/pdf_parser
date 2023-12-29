@@ -48,12 +48,12 @@ def get_colors():
     infer = flor.utils.latest(
         infer[infer["page_path"].map(lambda x: os.path.splitext(pdf_names[-1])[0] in x)]
     )
-    infer = infer.sort_values("page")
     if not infer.empty:
+        infer = infer.sort_values("page")
         webapp = flor.pivot("pdf_name", "page_color")
         webapp = flor.utils.latest(webapp[webapp["pdf_name"] == pdf_names[-1]])
-        webapp = webapp.sort_values("page")
         if not webapp.empty:
+            webapp = webapp.sort_values("page")
             if (
                 infer["tstamp"].drop_duplicates().values[0]
                 > webapp["tstamp"].drop_duplicates().values[0]
@@ -95,7 +95,7 @@ def save_colors():
     for c in flor.loop("page", colors):
         flor.log(const.page_color, c)
     flor.commit()
-    return "OK", 200
+    return jsonify({"message": "Colors saved successfully"}), 200
 
 
 @app.route("/metadata-for-page/<int:page_num>")
