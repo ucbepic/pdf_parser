@@ -72,7 +72,7 @@ if __name__ == "__main__":
     device = torch.device(flor.arg("device", config.device))
     model = model.to(device)
 
-    training_data = flor.pivot("page_path", "first_page")
+    training_data = flor.dataframe("page_path", "first_page")
     training_data["page_path"] = training_data["page_path"].apply(os.path.relpath)
     training_data = training_data[training_data["filename"] == "infer.py"]
     training_data = training_data[

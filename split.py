@@ -6,7 +6,7 @@ import sys
 from tqdm import tqdm
 from app.constants import PDF_DIR
 
-delta_colors = flor.pivot("pdf_name", "color")
+delta_colors = flor.dataframe("pdf_name", "color")
 delta_colors = flor.utils.latest(delta_colors)
 delta_colors = delta_colors.sort_values(by=["pdf_name", "colors"])
 print(delta_colors)
@@ -28,13 +28,18 @@ def split_pdf(pdf_name, start_page, end_page):
     new_doc.close()
     doc.close()
 
+
 for pdf_name in delta_colors["pdf_name"].unique():
-    pdf_colors = delta_colors[delta_colors["pdf_name"] == pdf_name].sort_values(by=["colors"])
+    pdf_colors = delta_colors[delta_colors["pdf_name"] == pdf_name].sort_values(
+        by=["colors"]
+    )
     print(pdf_colors)
     segments = []
     for index, row in pdf_colors.iterrows():
         print(index, row)
-        if index == 0 or (int(row["color"]) != int(pdf_colors.iloc[index - 1]["color"])):
+        if index == 0 or (
+            int(row["color"]) != int(pdf_colors.iloc[index - 1]["color"])
+        ):
             print("New segment")
             segments.append([row["colors"]])
         else:

@@ -1,3 +1,4 @@
+from typing import Any, Dict, List
 from flask import Flask, render_template, request, jsonify
 from werkzeug.utils import secure_filename
 from PIL import Image
@@ -44,13 +45,13 @@ def index():
 
 
 def get_colors():
-    infer = flor.pivot("first_page", "page_path")
+    infer = flor.dataframe("first_page", "page_path")
     infer = flor.utils.latest(
         infer[infer["page_path"].map(lambda x: os.path.splitext(pdf_names[-1])[0] in x)]
     )
     if not infer.empty:
         infer = infer.sort_values("page")
-        webapp = flor.pivot("pdf_name", "page_color")
+        webapp = flor.dataframe("pdf_name", "page_color")
         webapp = flor.utils.latest(webapp[webapp["pdf_name"] == pdf_names[-1]])
         if not webapp.empty:
             webapp = webapp.sort_values("page")
@@ -101,7 +102,7 @@ def save_colors():
 @app.route("/metadata-for-page/<int:page_num>")
 def metadata_for_page(page_num: int):
     # Retrieve metadata for the specified page number
-    metadata = [{"page_num": page_num}]
+    metadata: List[Dict[str, Any]] = [{"page_num": page_num}]
     # Identify the PDF that we're working with
     pdf_name = pdf_names[-1]
     metadata.append({"pdf_name": pdf_name})
@@ -124,7 +125,6 @@ def metadata_for_page(page_num: int):
     headings, page_numbers, ocr_text = analyze_text(ocr_name)
     # Add the results to the metadata dictionary
     metadata.append({"ocr-headings": headings})
-    metadata.append({"ocr-page_numbers": page_numbers})
 
     if (
         len(txt_text) < len(ocr_text) // 2

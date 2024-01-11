@@ -1,7 +1,7 @@
 import flor
 import config
 
-exp_history = flor.pivot(config.val_acc, config.val_loss, config.val_recall)
+exp_history = flor.dataframe(config.val_acc, config.val_loss, config.val_recall)
 # Only keep the first experiment
 exp_history = exp_history[exp_history["tstamp"] <= exp_history["tstamp"].min()]
 # Sort by val_recall
