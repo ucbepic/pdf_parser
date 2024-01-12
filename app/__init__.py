@@ -9,7 +9,7 @@ import numpy as np
 
 from .featurize import analyze_text
 
-from . import constants as const
+from . import config
 from .constants import PDF_DIR, IMGS_DIR, TXT_DIR, OCR_DIR
 
 app = Flask(__name__)
@@ -92,9 +92,9 @@ def save_colors():
     # Process the colors here...
     pdf_name = pdf_names.pop()
     pdf_names.clear()
-    flor.log(const.pdf_name, pdf_name)
+    flor.log(config.pdf_name, pdf_name)
     for c in flor.loop("page", colors):
-        flor.log(const.page_color, c)
+        flor.log(config.page_color, c)
     flor.commit()
     return jsonify({"message": "Colors saved successfully"}), 200
 

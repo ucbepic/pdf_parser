@@ -5,7 +5,7 @@ import torch
 from PIL import Image
 
 if __name__ == "__main__":
-    from config import device, page_path, first_page
+    from app.config import device, page_path, first_page
     from train import model, transform
 
     # Set the device for running the model

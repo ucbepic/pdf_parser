@@ -1,5 +1,5 @@
 import flor
-import config
+import app.config as config
 
 exp_history = flor.dataframe(config.val_acc, config.val_loss, config.val_recall)
 # Only keep the first experiment

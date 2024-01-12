@@ -13,9 +13,5 @@ os.makedirs(TXT_DIR, exist_ok=True)
 OCR_DIR = os.path.join("app", "static", "private", "ocr")
 os.makedirs(OCR_DIR, exist_ok=True)
 
-# WebApp schema
-pdf_name = "pdf_name"
-page_color = "page_color"
 
-
-__all__ = ["PDF_DIR", "IMGS_DIR", "TXT_DIR", "OCR_DIR", "pdf_name", "page_color"]
+__all__ = ["PDF_DIR", "IMGS_DIR", "TXT_DIR", "OCR_DIR"]
