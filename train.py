@@ -72,13 +72,13 @@ if __name__ == "__main__":
     device = torch.device(flor.arg("device", config.device))
     model = model.to(device)
 
-    training_data = flor.dataframe("page_path", "first_page")
-    training_data["page_path"] = training_data["page_path"].apply(os.path.relpath)
-    training_data = training_data[training_data["filename"] == "infer.py"]
-    training_data = training_data[
-        training_data["tstamp"] == training_data["tstamp"].max()
-    ]
-    # print(training_data.head(n=len(training_data)))
+    training_data = flor.dataframe(config.page_path, config.first_page)
+    training_data[config.page_path] = training_data[config.page_path].apply(
+        os.path.relpath
+    )
+    training_data = flor.utils.latest(
+        training_data[training_data["filename"] == "infer.py"]
+    )
 
     test_size = flor.arg("test_size", 0.2)
     train_data, val_data = train_test_split(training_data, test_size=test_size)
@@ -102,7 +102,7 @@ if __name__ == "__main__":
         gamma=flor.arg("lr_gamma", 0.1),
     )
 
-    num_epochs = flor.arg("num_epochs", 25)
+    num_epochs = flor.arg("num_epochs", 15)
     best_acc = 0.0
     with flor.checkpointing(
         model=model, optimizer=optimizer, lr_scheduler=exp_lr_scheduler

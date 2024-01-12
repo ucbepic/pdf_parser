@@ -45,25 +45,29 @@ def index():
 
 
 def get_colors():
-    infer = flor.dataframe("first_page", "page_path")
+    infer = flor.dataframe(config.first_page, config.page_path)
     infer = flor.utils.latest(
-        infer[infer["page_path"].map(lambda x: os.path.splitext(pdf_names[-1])[0] in x)]
+        infer[
+            infer[config.page_path].map(
+                lambda x: os.path.splitext(pdf_names[-1])[0] in x
+            )
+        ]
     )
     if not infer.empty:
         infer = infer.sort_values("page")
-        webapp = flor.dataframe("pdf_name", "page_color")
-        webapp = flor.utils.latest(webapp[webapp["pdf_name"] == pdf_names[-1]])
+        webapp = flor.dataframe(config.pdf_name, config.page_color)
+        webapp = flor.utils.latest(webapp[webapp[config.pdf_name] == pdf_names[-1]])
         if not webapp.empty:
             webapp = webapp.sort_values("page")
             if (
                 infer["tstamp"].drop_duplicates().values[0]
                 > webapp["tstamp"].drop_duplicates().values[0]
             ):
-                return (infer["first_page"].astype(int).cumsum() - 1).tolist()
+                return (infer[config.first_page].astype(int).cumsum() - 1).tolist()
             else:
-                return webapp["page_color"].astype(int).tolist()
+                return webapp[config.page_color].astype(int).tolist()
         else:
-            return (infer["first_page"].astype(int).cumsum() - 1).tolist()
+            return (infer[config.first_page].astype(int).cumsum() - 1).tolist()
 
 
 @app.route("/view-pdf")
