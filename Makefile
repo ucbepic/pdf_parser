@@ -18,9 +18,9 @@ model.pth: export_ckpt.py
 	@echo "Generating model..."
 	@python export_ckpt.py
 
-infer: model.pth infer.py
+infer: model.pth label_by_hand.py
 	@echo "Inferencing..."
-	@python infer.py
+	@python label_by_hand.py
 	@touch infer
 
 train: process_pdfs train.py
