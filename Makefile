@@ -27,7 +27,7 @@ train: process_pdfs train.py
 	@echo "Training..."
 	@python train.py
 
-apply_split: split.py
+apply_split: split.py clean
 	@echo "Applying split..."
 	@python split.py
 	

@@ -4,12 +4,20 @@ import os
 import warnings
 import sys
 from tqdm import tqdm
-from app.constants import PDF_DIR
 
-delta_colors = flor.dataframe("pdf_name", "color")
-delta_colors = flor.utils.latest(delta_colors)
-delta_colors = delta_colors.sort_values(by=["pdf_name", "colors"])
-print(delta_colors)
+from app.constants import PDF_DIR
+from app import config
+
+infer = flor.dataframe(config.page_path, config.first_page)
+infer = flor.utils.latest(infer)
+infer[config.pdf_name] = infer[config.page_path].map(
+    lambda x: os.path.basename(os.path.split(x)[0])
+)
+if not infer.empty:
+    infer[config.first_page] = infer[config.first_page].astype(int)
+    infer = infer.sort_values(by=["document", "page"])
+
+# TODO: use page_colors if tstamp for flask > infer tstamp
 
 
 def split_pdf(pdf_name, start_page, end_page):
@@ -29,24 +37,25 @@ def split_pdf(pdf_name, start_page, end_page):
     doc.close()
 
 
-for pdf_name in delta_colors["pdf_name"].unique():
-    pdf_colors = delta_colors[delta_colors["pdf_name"] == pdf_name].sort_values(
-        by=["colors"]
-    )
-    print(pdf_colors)
-    segments = []
-    for index, row in pdf_colors.iterrows():
-        print(index, row)
-        if index == 0 or (
-            int(row["color"]) != int(pdf_colors.iloc[index - 1]["color"])
-        ):
-            print("New segment")
-            segments.append([row["colors"]])
+for pdf_name in infer["pdf_name"].unique():
+    document = infer[infer["pdf_name"] == pdf_name]
+    first_pages = document[document[config.first_page] == 1].reset_index(drop=True)
+
+    print(first_pages)
+    print("num segments", len(first_pages))
+    print("last page", document.iloc[-1]["page"])
+
+    if len(first_pages) == 1:
+        print(f"No splitting to do for {pdf_name}")
+        continue
+
+    for index, row in first_pages.iterrows():
+        if index + 1 == len(first_pages):
+            split_pdf(
+                pdf_name + ".pdf", int(row["page"]), int(document.iloc[-1]["page"])
+            )
         else:
-            segments[-1].append(row["colors"])
-    for segment in segments:
-        split_pdf(pdf_name, min(segment), max(segment))
+            next_row = first_pages.iloc[index + 1]
+            split_pdf(pdf_name + ".pdf", int(row["page"]), int(next_row["page"]) - 1)
 
-
-for pdf_name in delta_colors["pdf_name"].unique():
-    os.remove(os.path.join(PDF_DIR, pdf_name))
+    os.remove(os.path.join(PDF_DIR, pdf_name + ".pdf"))
