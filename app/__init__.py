@@ -1,10 +1,8 @@
 from typing import Any, Dict, List
 from flask import Flask, render_template, request, jsonify
 from werkzeug.utils import secure_filename
-from PIL import Image
 import os
 import flor
-import numpy as np
 
 
 from .featurize import analyze_text
@@ -16,35 +14,8 @@ app = Flask(__name__)
 pdf_names = []
 
 
-def resize_image(image_path, size=(300, 400)):
-    # Open an image file
-    with Image.open(image_path) as img:
-        # Resize the image
-        img = img.resize(size, Image.LANCZOS)
-        # Save the image back to the same path
-        img.save(image_path)
-
-
-@app.route("/")
-def index():
-    pdf_files = [f for f in os.listdir(PDF_DIR) if f.endswith(".pdf")]
-
-    # Resize each image and create a list of tuples (pdf, image_path)
-    pdf_previews = []
-    for pdf in pdf_files:
-        image_name = pdf.replace(".pdf", ".png")
-        image_path = os.path.join(IMGS_DIR, image_name)
-        if os.path.exists(image_path):
-            resize_image(image_path)
-            # Only include the part of the image_path that comes after 'app/static/private/imgs'
-            relative_image_path = os.path.relpath(image_path, start="app/static")
-            pdf_previews.append((pdf, relative_image_path))
-
-    # Render the template with the PDF previews
-    return render_template("index.html", pdf_previews=pdf_previews)
-
-
 def get_colors():
+    # TODO: this method may also be called by apply_split
     infer = flor.dataframe(config.first_page, config.page_path)
     infer = flor.utils.latest(
         infer[
@@ -70,6 +41,24 @@ def get_colors():
             return (infer[config.first_page].astype(int).cumsum() - 1).tolist()
 
 
+@app.route("/")
+def index():
+    pdf_files = [f for f in os.listdir(PDF_DIR) if f.endswith(".pdf")]
+
+    # Resize each image and create a list of tuples (pdf, image_path)
+    pdf_previews = []
+    for pdf in pdf_files:
+        image_name = pdf.replace(".pdf", ".png")
+        image_path = os.path.join(IMGS_DIR, image_name)
+        if os.path.exists(image_path):
+            # Only include the part of the image_path that comes after 'app/static/private/imgs'
+            relative_image_path = os.path.relpath(image_path, start="app/static")
+            pdf_previews.append((pdf, relative_image_path))
+
+    # Render the template with the PDF previews
+    return render_template("index.html", pdf_previews=pdf_previews)
+
+
 @app.route("/view-pdf")
 def view_pdf():
     # TODO: Display the PNG not the PDF. Easier overlay.
@@ -83,7 +72,6 @@ def view_pdf():
     pdf_path = os.path.join(PDF_DIR, pdf_name)
 
     if os.path.isfile(pdf_path):
-        # Render the label_pdf.html template with the PDF name and get_colors()
         return render_template("label_pdf.html", pdf_name=pdf_name, colors=get_colors())
     else:
         return "File not found.", 404
@@ -103,12 +91,27 @@ def save_colors():
     return jsonify({"message": "Colors saved successfully"}), 200
 
 
-@app.route("/metadata-for-page/<int:page_num>")
-def metadata_for_page(page_num: int):
-    # Retrieve metadata for the specified page number
-    metadata: List[Dict[str, Any]] = [{"page_num": page_num}]
-    # Identify the PDF that we're working with
-    pdf_name = pdf_names[-1]
+def check_for_invalid_char_in_file(filename, invalid_char="�"):
+    """Opens a file and checks for the presence of a specified invalid character.
+
+    Args:
+        filename (str): The name of the file to check.
+        invalid_char (str): The character to search for. Defaults to '�'.
+
+    Returns:
+        bool: True if the invalid character is found, False otherwise.
+    """
+
+    with open(filename, "r") as f:
+        for line in f:
+            if invalid_char in line:
+                return True
+    return False
+
+
+def merge_text_lattice(pdf_name, page_num):
+    metadata = []
+
     metadata.append({"pdf_name": pdf_name})
     # Construct path to the text file
     txt_name = os.path.join(
@@ -130,7 +133,7 @@ def metadata_for_page(page_num: int):
     # Add the results to the metadata dictionary
     metadata.append({"ocr-headings": headings})
 
-    if (
+    if check_for_invalid_char_in_file(txt_name) or (
         len(txt_text) < len(ocr_text) // 2
         or len(txt_text.strip()) < len(txt_text) * 3 // 4
     ):
@@ -138,6 +141,16 @@ def metadata_for_page(page_num: int):
     else:
         metadata.append({"txt-text": txt_text})
 
+    return metadata
+
+
+@app.route("/metadata-for-page/<int:page_num>")
+def metadata_for_page(page_num: int):
+    # Retrieve metadata for the specified page number
+    metadata: List[Dict[str, Any]] = [{"page_num": page_num}]
+    # Identify the PDF that we're working with
+    pdf_name = pdf_names[-1]
+    metadata += merge_text_lattice(pdf_name, page_num)
     # Retrieve metadata for the specified page number
     return jsonify(metadata)
 

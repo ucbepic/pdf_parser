@@ -1,5 +1,13 @@
 .PHONY: run install clean apply_split train install_tesseract
 
+                                                 
+#  _____ __    _____ _____ _____ __    _____ _____ 
+# |   __|  |  |     | __  |  _  |  |  |  _  |   | |
+# |   __|  |__|  |  |    -|   __|  |__|     | | | |
+# |__|  |_____|_____|__|__|__|  |_____|__|__|_|___|
+#                                                 
+
+
 # Set the FLASK_APP environment variable
 export FLASK_APP=run.py
 export FLASK_ENV=development

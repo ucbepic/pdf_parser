@@ -11,6 +11,15 @@ import math
 import time
 
 
+def resize_image(image_path, size=(300, 400)):
+    # Open an image file
+    with Image.open(image_path) as img:
+        # Resize the image
+        img = img.resize(size, Image.LANCZOS)
+        # Save the image back to the same path
+        img.save(image_path)
+
+
 def process_page(pdf_path, page_num, img_path, txt_path, ocr_path):
     doc = fitz.open(pdf_path)  # type: ignore
     page = doc.load_page(page_num)
@@ -27,6 +36,7 @@ def process_page(pdf_path, page_num, img_path, txt_path, ocr_path):
             IMGS_DIR, os.path.splitext(os.path.basename(pdf_path))[0] + ".png"
         )
         pix.save(preview_path)
+        resize_image(preview_path)
 
     # Extract text and save as TXT
     text = page.get_text()
