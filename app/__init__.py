@@ -132,6 +132,7 @@ def merge_text_lattice(pdf_name, page_num):
     headings, page_numbers, ocr_text = analyze_text(ocr_name)
     # Add the results to the metadata dictionary
     metadata.append({"ocr-headings": headings})
+    metadata.append({"ocr-page_numbers": page_numbers})
 
     if check_for_invalid_char_in_file(txt_name) or (
         len(txt_text) < len(ocr_text) // 2
