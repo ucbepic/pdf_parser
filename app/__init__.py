@@ -147,7 +147,7 @@ def merge_text_lattice(pdf_name, page_num):
 @app.route("/metadata-for-page/<int:page_num>")
 def metadata_for_page(page_num: int):
     # Retrieve metadata for the specified page number
-    metadata: List[Dict[str, Any]] = [{"page_num": page_num}]
+    metadata: List[Dict[str, Any]] = [{"page_num": page_num + 1}]
     # Identify the PDF that we're working with
     pdf_name = pdf_names[-1]
     metadata += merge_text_lattice(pdf_name, page_num)
