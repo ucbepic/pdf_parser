@@ -157,18 +157,16 @@ def merge_text_lattice(pdf_name, page_num):
     metadata.append({"ocr-headings": headings})
     metadata.append(
         {
-            "ocr-page_numbers": set(
-                [n for n in page_numbers if int(n) == page_num + 1]
-                | set(
-                    []
-                    if page_num == 0
-                    else set([int(each) for each in page_numbers])
-                    & set(
-                        [
-                            int(each) + 1
-                            for each in ocr_page_numbers[(pdf_name, page_num - 1)]
-                        ]
-                    )
+            "ocr-page_numbers": set([n for n in page_numbers if int(n) == page_num + 1])
+            | set(
+                []
+                if page_num == 0
+                else set([int(each) for each in page_numbers])
+                & set(
+                    [
+                        int(each) + 1
+                        for each in ocr_page_numbers[(pdf_name, page_num - 1)]
+                    ]
                 )
             )
         }
