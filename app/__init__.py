@@ -122,7 +122,9 @@ def merge_text_lattice(pdf_name, page_num):
     # Add the results to the metadata dictionary
 
     metadata.append({"txt-headings": headings})
-    metadata.append({"txt-page_numbers": page_numbers})
+    metadata.append(
+        {"txt-page_numbers": [n for n in page_numbers if int(n) == page_num + 1]}
+    )
 
     # Construct path to the OCR file
     ocr_name = os.path.join(
@@ -132,7 +134,9 @@ def merge_text_lattice(pdf_name, page_num):
     headings, page_numbers, ocr_text = analyze_text(ocr_name)
     # Add the results to the metadata dictionary
     metadata.append({"ocr-headings": headings})
-    metadata.append({"ocr-page_numbers": page_numbers})
+    metadata.append(
+        {"ocr-page_numbers": [n for n in page_numbers if int(n) == page_num + 1]}
+    )
 
     if check_for_invalid_char_in_file(txt_name) or (
         len(txt_text) < len(ocr_text) // 2
