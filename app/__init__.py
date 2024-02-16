@@ -109,6 +109,10 @@ def check_for_invalid_char_in_file(filename, invalid_char="�"):
     return False
 
 
+txt_page_numbers = {}
+ocr_page_numbers = {}
+
+
 def merge_text_lattice(pdf_name, page_num):
     metadata = []
 
@@ -119,11 +123,27 @@ def merge_text_lattice(pdf_name, page_num):
     )
     # Analyze the text on the page
     headings, page_numbers, txt_text = analyze_text(txt_name)
+    txt_page_numbers[(pdf_name, page_num)] = set(page_numbers)
     # Add the results to the metadata dictionary
 
     metadata.append({"txt-headings": headings})
     metadata.append(
-        {"txt-page_numbers": [n for n in page_numbers if int(n) == page_num + 1]}
+        {
+            "txt-page_numbers": set(
+                [int(n) for n in page_numbers if int(n) == page_num + 1]
+            )
+            | set(
+                []
+                if page_num == 0
+                else set([int(each) for each in page_numbers])
+                & set(
+                    [
+                        int(each) + 1
+                        for each in txt_page_numbers[(pdf_name, page_num - 1)]
+                    ]
+                )
+            )
+        }
     )
 
     # Construct path to the OCR file
@@ -132,10 +152,26 @@ def merge_text_lattice(pdf_name, page_num):
     )
     # Analyze the ocr on the page
     headings, page_numbers, ocr_text = analyze_text(ocr_name)
+    ocr_page_numbers[(pdf_name, page_num)] = set(page_numbers)
     # Add the results to the metadata dictionary
     metadata.append({"ocr-headings": headings})
     metadata.append(
-        {"ocr-page_numbers": [n for n in page_numbers if int(n) == page_num + 1]}
+        {
+            "ocr-page_numbers": set(
+                [n for n in page_numbers if int(n) == page_num + 1]
+                | set(
+                    []
+                    if page_num == 0
+                    else set([int(each) for each in page_numbers])
+                    & set(
+                        [
+                            int(each) + 1
+                            for each in ocr_page_numbers[(pdf_name, page_num - 1)]
+                        ]
+                    )
+                )
+            )
+        }
     )
 
     if check_for_invalid_char_in_file(txt_name) or (
