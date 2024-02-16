@@ -113,6 +113,19 @@ txt_page_numbers = {}
 ocr_page_numbers = {}
 
 
+def estimate_page_num(page_num, page_numbers, prev_page_numbers):
+    res = [each for each in page_numbers if each == page_num]
+    intersecting_page_numbers = page_numbers & set(
+        [int(each) + 1 for each in prev_page_numbers]
+    )
+    pages = sorted(
+        [(n, abs(n - page_num)) for n in intersecting_page_numbers], key=lambda x: x[1]
+    )
+    if pages:
+        res.append(pages[0][0])
+    return res
+
+
 def merge_text_lattice(pdf_name, page_num):
     metadata = []
 
@@ -123,25 +136,20 @@ def merge_text_lattice(pdf_name, page_num):
     )
     # Analyze the text on the page
     headings, page_numbers, txt_text = analyze_text(txt_name)
-    txt_page_numbers[(pdf_name, page_num)] = set(page_numbers)
+    txt_page_numbers[(pdf_name, page_num)] = set([int(each) for each in page_numbers])
     # Add the results to the metadata dictionary
 
     metadata.append({"txt-headings": headings})
     metadata.append(
         {
-            "txt-page_numbers": list(
-                set([int(n) for n in page_numbers if int(n) == page_num + 1])
-                | set(
-                    []
+            "txt-page_numbers": estimate_page_num(
+                page_num,
+                set([int(each) for each in page_numbers]),
+                (
+                    set([])
                     if page_num == 0
-                    else set([int(each) for each in page_numbers])
-                    & set(
-                        [
-                            int(each) + 1
-                            for each in txt_page_numbers[(pdf_name, page_num - 1)]
-                        ]
-                    )
-                )
+                    else txt_page_numbers[(pdf_name, page_num - 1)]
+                ),
             )
         }
     )
@@ -152,24 +160,19 @@ def merge_text_lattice(pdf_name, page_num):
     )
     # Analyze the ocr on the page
     headings, page_numbers, ocr_text = analyze_text(ocr_name)
-    ocr_page_numbers[(pdf_name, page_num)] = set(page_numbers)
+    ocr_page_numbers[(pdf_name, page_num)] = set([int(each) for each in page_numbers])
     # Add the results to the metadata dictionary
     metadata.append({"ocr-headings": headings})
     metadata.append(
         {
-            "ocr-page_numbers": list(
-                set([n for n in page_numbers if int(n) == page_num + 1])
-                | set(
-                    []
+            "ocr-page_numbers": estimate_page_num(
+                page_num,
+                set([int(each) for each in page_numbers]),
+                (
+                    set([])
                     if page_num == 0
-                    else set([int(each) for each in page_numbers])
-                    & set(
-                        [
-                            int(each) + 1
-                            for each in ocr_page_numbers[(pdf_name, page_num - 1)]
-                        ]
-                    )
-                )
+                    else ocr_page_numbers[(pdf_name, page_num - 1)]
+                ),
             )
         }
     )
