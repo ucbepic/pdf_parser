@@ -118,11 +118,8 @@ def estimate_page_num(page_num, page_numbers, prev_page_numbers):
     intersecting_page_numbers = page_numbers & set(
         [int(each) + 1 for each in prev_page_numbers]
     )
-    pages = sorted(
-        [(n, abs(n - page_num)) for n in intersecting_page_numbers], key=lambda x: x[1]
-    )
-    if pages:
-        res.append(pages[0][0])
+    for n in sorted([n for n in intersecting_page_numbers]):
+        res.append(n)
     return res
 
 
