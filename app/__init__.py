@@ -114,7 +114,7 @@ ocr_page_numbers = {}
 
 
 def estimate_page_num(page_num, page_numbers, prev_page_numbers):
-    res = [each for each in page_numbers if each == page_num]
+    res = [each for each in page_numbers if each == page_num + 1]
     intersecting_page_numbers = page_numbers & set(
         [int(each) + 1 for each in prev_page_numbers]
     )
