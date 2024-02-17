@@ -120,7 +120,7 @@ def estimate_page_num(page_num, final_page, page_numbers, prev_page_numbers):
     )
     for n in sorted([n for n in intersecting_page_numbers]):
         res.append(n)
-    return set([n for n in res if n <= final_page])
+    return list(set([n for n in res if n <= final_page]))
 
 
 def merge_text_lattice(pdf_name, page_num):
@@ -135,24 +135,16 @@ def merge_text_lattice(pdf_name, page_num):
 
     # Analyze the text on the page
     headings, page_numbers, txt_text = analyze_text(txt_name)
-    txt_page_numbers[(pdf_name, page_num)] = set([int(each) for each in page_numbers])
     # Add the results to the metadata dictionary
 
     metadata.append({"txt-headings": headings})
-    metadata.append(
-        {
-            "txt-page_numbers": estimate_page_num(
-                page_num,
-                last_page,
-                set([int(each) for each in page_numbers]),
-                (
-                    set([])
-                    if page_num == 0
-                    else txt_page_numbers[(pdf_name, page_num - 1)]
-                ),
-            )
-        }
+    txt_page_numbers[(pdf_name, page_num)] = estimate_page_num(
+        page_num,
+        last_page,
+        set([int(each) for each in page_numbers]),
+        (set([]) if page_num == 0 else txt_page_numbers[(pdf_name, page_num - 1)]),
     )
+    metadata.append({"txt-page_numbers": txt_page_numbers[(pdf_name, page_num)]})
 
     # Construct path to the OCR file
     ocr_name = os.path.join(
@@ -160,23 +152,15 @@ def merge_text_lattice(pdf_name, page_num):
     )
     # Analyze the ocr on the page
     headings, page_numbers, ocr_text = analyze_text(ocr_name)
-    ocr_page_numbers[(pdf_name, page_num)] = set([int(each) for each in page_numbers])
     # Add the results to the metadata dictionary
     metadata.append({"ocr-headings": headings})
-    metadata.append(
-        {
-            "ocr-page_numbers": estimate_page_num(
-                page_num,
-                last_page,
-                set([int(each) for each in page_numbers]),
-                (
-                    set([])
-                    if page_num == 0
-                    else ocr_page_numbers[(pdf_name, page_num - 1)]
-                ),
-            )
-        }
+    ocr_page_numbers[(pdf_name, page_num)] = estimate_page_num(
+        page_num,
+        last_page,
+        set([int(each) for each in page_numbers]),
+        (set([]) if page_num == 0 else ocr_page_numbers[(pdf_name, page_num - 1)]),
     )
+    metadata.append({"ocr-page_numbers": ocr_page_numbers[(pdf_name, page_num)]})
 
     if check_for_invalid_char_in_file(txt_name) or (
         len(txt_text) < len(ocr_text) // 2
