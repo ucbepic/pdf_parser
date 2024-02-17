@@ -113,7 +113,7 @@ txt_page_numbers = {}
 ocr_page_numbers = {}
 
 
-def estimate_page_num(page_num, final_page page_numbers, prev_page_numbers):
+def estimate_page_num(page_num, final_page, page_numbers, prev_page_numbers):
     res = [each for each in page_numbers if each == page_num + 1]
     intersecting_page_numbers = page_numbers & set(
         [int(each) + 1 for each in prev_page_numbers]
@@ -142,7 +142,8 @@ def merge_text_lattice(pdf_name, page_num):
     metadata.append(
         {
             "txt-page_numbers": estimate_page_num(
-                page_num, last_page,
+                page_num,
+                last_page,
                 set([int(each) for each in page_numbers]),
                 (
                     set([])
@@ -165,7 +166,8 @@ def merge_text_lattice(pdf_name, page_num):
     metadata.append(
         {
             "ocr-page_numbers": estimate_page_num(
-                page_num, last_page,
+                page_num,
+                last_page,
                 set([int(each) for each in page_numbers]),
                 (
                     set([])
