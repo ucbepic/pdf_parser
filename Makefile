@@ -26,10 +26,15 @@ model.pth: export_ckpt.py
 	@echo "Generating model..."
 	@python export_ckpt.py
 
-infer: label_by_hand.py
+infer: model.pth infer.py
 	@echo "Inferencing..."
-	@python label_by_hand.py
+	@python infer.py
 	@touch infer
+
+hand_label: label_by_hand.py
+	@echo "Labeling by hand"
+	@python label_by_hand.py
+	@touch hand_label
 
 train: process_pdfs train.py
 	@echo "Training..."
@@ -41,7 +46,7 @@ apply_split: split.py clean
 	
 
 # Run the Flask development server
-run: process_pdfs infer
+run: process_pdfs hand_label
 	@echo "Starting Flask development server..."
 	@flask run
 
