@@ -183,13 +183,25 @@ def merge_text_lattice(pdf_name, page_num):
 
 @app.route("/metadata-for-page/<int:page_num>")
 def metadata_for_page(page_num: int):
-    # Retrieve metadata for the specified page number
-    metadata: List[Dict[str, Any]] = [{"page_num": page_num + 1}]
-    # Identify the PDF that we're working with
-    pdf_name = pdf_names[-1]
-    metadata += merge_text_lattice(pdf_name, page_num)
-    # Retrieve metadata for the specified page number
-    return jsonify(metadata)
+    view_selection = flor.arg("debugging", 1)
+    if view_selection == 0:
+        lattice = merge_text_lattice(pdf_names[-1], page_num)
+        last_message = lattice[-1]
+        assert "ocr-text" in last_message or "txt-text" in last_message
+        if "ocr-text" in last_message:
+            return jsonify([{f"ocr-page-{page_num+1}": last_message["ocr-text"]}])
+        else:
+            return jsonify([{f"txt-page-{page_num+1}": last_message["txt-text"]}])
+    elif view_selection == 1:
+        # Retrieve metadata for the specified page number
+        metadata: List[Dict[str, Any]] = [{"page_num": page_num + 1}]
+        # Identify the PDF that we're working with
+        pdf_name = pdf_names[-1]
+        metadata += merge_text_lattice(pdf_name, page_num)
+        # Retrieve metadata for the specified page number
+        return jsonify(metadata)
+    else:
+        pass
 
 
 if __name__ == "__main__":
