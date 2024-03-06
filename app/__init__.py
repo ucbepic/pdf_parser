@@ -96,7 +96,16 @@ def save_colors():
         return jsonify({"message": "Colors saved successfully"}), 200
 
 
-memoized_features = flor.dataframe("merge-source", "merged-text")
+memoized_features = flor.utils.latest(
+    flor.dataframe(
+        "txt-headings",
+        "txt-page_numbers",
+        "ocr-headings",
+        "ocr-page_numbers",
+        "merge-source",
+        "merged-text",
+    )
+)
 
 
 @app.route("/metadata-for-page/<int:page_num>")

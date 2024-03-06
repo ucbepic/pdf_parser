@@ -22,6 +22,11 @@ process_pdfs: $(PDFS) pdf_demux.py
 	@python pdf_demux.py
 	@touch process_pdfs
 
+featurize: process_pdfs featurize.py
+	@echo "Featurizing Data..."
+	@python featurize.py
+	@touch featurize
+
 model.pth: export_ckpt.py
 	@echo "Generating model..."
 	@python export_ckpt.py
@@ -36,7 +41,7 @@ hand_label: label_by_hand.py
 	@python label_by_hand.py
 	@touch hand_label
 
-train: process_pdfs train.py
+train: featurize train.py
 	@echo "Training..."
 	@python train.py
 
@@ -46,7 +51,7 @@ apply_split: split.py clean
 	
 
 # Run the Flask development server
-run: process_pdfs hand_label
+run: featurize hand_label
 	@echo "Starting Flask development server..."
 	@flask run
 
@@ -80,3 +85,4 @@ clean:
 	@rm -f infer
 	@rm -f process_pdfs
 	@rm -f hand_label
+	@rm -f featurize

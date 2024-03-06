@@ -165,3 +165,4 @@ last_inference
 process_pdfs
 infer
 hand_label
+featurize

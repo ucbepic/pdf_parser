@@ -75,7 +75,7 @@ def merge_text_lattice(pdf_name, page_num, txt_page_numbers, ocr_page_numbers):
         flor.log("merge-source", "txt")
         metadata.append({"txt-text": flor.log("merged-text", txt_text)})
 
-    return metadata
+    metadata.clear()
 
 
 def estimate_page_num(page_num, final_page, page_numbers, prev_page_numbers):
@@ -132,6 +132,4 @@ if __name__ == "__main__":
         for page in flor.loop(
             "page", range(len(os.listdir(os.path.join(IMGS_DIR, doc_name))))
         ):
-            metadata = merge_text_lattice(
-                doc_name, page, txt_page_numbers, ocr_page_numbers
-            )
+            merge_text_lattice(doc_name, page, txt_page_numbers, ocr_page_numbers)
