@@ -41,19 +41,34 @@ def get_colors():
             return (infer[config.first_page].astype(int).cumsum() - 1).tolist()
 
 
+memoized_metadata = {}
+
+
 @app.route("/")
 def index():
-    pdf_files = [f for f in os.listdir(PDF_DIR) if f.endswith(".pdf")]
+    pdf_files = [
+        os.path.splitext(f)[0] for f in os.listdir(PDF_DIR) if f.endswith(".pdf")
+    ]
 
     # Resize each image and create a list of tuples (pdf, image_path)
     pdf_previews = []
-    for pdf in pdf_files:
-        image_name = pdf.replace(".pdf", ".png")
+    for doc_name in flor.loop("document", pdf_files):
+        image_name = doc_name + ".png"
         image_path = os.path.join(IMGS_DIR, image_name)
         if os.path.exists(image_path):
             # Only include the part of the image_path that comes after 'app/static/private/imgs'
             relative_image_path = os.path.relpath(image_path, start="app/static")
-            pdf_previews.append((pdf, relative_image_path))
+            pdf_previews.append((doc_name, relative_image_path))
+
+        txt_page_numbers = {}
+        ocr_page_numbers = {}
+        for page in flor.loop(
+            "page", range(len(os.listdir(os.path.join(IMGS_DIR, doc_name))))
+        ):
+            metadata = merge_text_lattice(
+                doc_name, page, txt_page_numbers, ocr_page_numbers
+            )
+            memoized_metadata[(doc_name, page)] = metadata
 
     # Render the template with the PDF previews
     return render_template("index.html", pdf_previews=pdf_previews)
@@ -110,10 +125,6 @@ def check_for_invalid_char_in_file(filename, invalid_char="�"):
     return False
 
 
-txt_page_numbers = {}
-ocr_page_numbers = {}
-
-
 def estimate_page_num(page_num, final_page, page_numbers, prev_page_numbers):
     res = [each for each in page_numbers if each == page_num + 1]
     intersecting_page_numbers = set(page_numbers) & set(
@@ -124,96 +135,84 @@ def estimate_page_num(page_num, final_page, page_numbers, prev_page_numbers):
     return list(set([n for n in res if n <= final_page]))
 
 
-def merge_text_lattice(pdf_name, page_num):
+def merge_text_lattice(pdf_name, page_num, txt_page_numbers, ocr_page_numbers):
     """***********************************
     Look at how flor.log is used for featurization
     ***********************************"""
-    with flor.iteration("document", None, pdf_name):
-        with flor.iteration("page", page_num, page_num):
-            metadata = []
+    metadata = []
 
-            metadata.append({"pdf_name": pdf_name})
-            # Construct path to the text file
-            txt_name = os.path.join(
-                TXT_DIR,
-                os.path.splitext(os.path.basename(pdf_name))[0],
-                f"page_{page_num}.txt",
+    metadata.append({"pdf_name": pdf_name})
+    # Construct path to the text file
+    txt_name = os.path.join(
+        TXT_DIR,
+        os.path.splitext(os.path.basename(pdf_name))[0],
+        f"page_{page_num}.txt",
+    )
+    last_page = len(os.listdir(os.path.dirname(txt_name)))
+
+    # Analyze the text on the page
+    headings, page_numbers, txt_text = analyze_text(txt_name)
+    # Add the results to the metadata dictionary
+
+    metadata.append({"txt-headings": flor.log("txt-headings", headings)})
+    txt_page_numbers[page_num] = [int(each) for each in page_numbers]
+    metadata.append(
+        {
+            "txt-page_numbers": flor.log(
+                "txt-page_numbers",
+                estimate_page_num(
+                    page_num,
+                    last_page,
+                    txt_page_numbers[page_num],
+                    ([] if page_num == 0 else txt_page_numbers[page_num - 1]),
+                ),
             )
-            last_page = len(os.listdir(os.path.dirname(txt_name)))
+        }
+    )
 
-            # Analyze the text on the page
-            headings, page_numbers, txt_text = analyze_text(txt_name)
-            # Add the results to the metadata dictionary
-
-            metadata.append({"txt-headings": flor.log("txt-headings", headings)})
-            txt_page_numbers[(pdf_name, page_num)] = [
-                int(each) for each in page_numbers
-            ]
-            metadata.append(
-                {
-                    "txt-page_numbers": flor.log(
-                        "txt-page_numbers",
-                        estimate_page_num(
-                            page_num,
-                            last_page,
-                            txt_page_numbers[(pdf_name, page_num)],
-                            (
-                                []
-                                if page_num == 0
-                                else txt_page_numbers[(pdf_name, page_num - 1)]
-                            ),
-                        ),
-                    )
-                }
+    # Construct path to the OCR file
+    ocr_name = os.path.join(
+        OCR_DIR,
+        os.path.splitext(os.path.basename(pdf_name))[0],
+        f"page_{page_num}.txt",
+    )
+    # Analyze the ocr on the page
+    headings, page_numbers, ocr_text = analyze_text(ocr_name)
+    # Add the results to the metadata dictionary
+    metadata.append({"ocr-headings": flor.log("ocr-headings", headings)})
+    ocr_page_numbers[page_num] = [int(each) for each in page_numbers]
+    metadata.append(
+        {
+            "ocr-page_numbers": flor.log(
+                "ocr-page_numbers",
+                estimate_page_num(
+                    page_num,
+                    last_page,
+                    ocr_page_numbers[page_num],
+                    ([] if page_num == 0 else ocr_page_numbers[page_num - 1]),
+                ),
             )
+        }
+    )
 
-            # Construct path to the OCR file
-            ocr_name = os.path.join(
-                OCR_DIR,
-                os.path.splitext(os.path.basename(pdf_name))[0],
-                f"page_{page_num}.txt",
-            )
-            # Analyze the ocr on the page
-            headings, page_numbers, ocr_text = analyze_text(ocr_name)
-            # Add the results to the metadata dictionary
-            metadata.append({"ocr-headings": flor.log("ocr-headings", headings)})
-            ocr_page_numbers[(pdf_name, page_num)] = [
-                int(each) for each in page_numbers
-            ]
-            metadata.append(
-                {
-                    "ocr-page_numbers": flor.log(
-                        "ocr-page_numbers",
-                        estimate_page_num(
-                            page_num,
-                            last_page,
-                            ocr_page_numbers[(pdf_name, page_num)],
-                            (
-                                []
-                                if page_num == 0
-                                else ocr_page_numbers[(pdf_name, page_num - 1)]
-                            ),
-                        ),
-                    )
-                }
-            )
+    if check_for_invalid_char_in_file(txt_name) or (
+        len(txt_text) < len(ocr_text) // 2
+        or len(txt_text.strip()) < len(txt_text) * 3 // 4
+    ):
+        flor.log("merge-source", "ocr")
+        metadata.append({"ocr-text": flor.log("merged-text", ocr_text)})
+    else:
+        flor.log("merge-source", "txt")
+        metadata.append({"txt-text": flor.log("merged-text", txt_text)})
 
-            if check_for_invalid_char_in_file(txt_name) or (
-                len(txt_text) < len(ocr_text) // 2
-                or len(txt_text.strip()) < len(txt_text) * 3 // 4
-            ):
-                metadata.append({"ocr-text": flor.log("merged-text", ocr_text)})
-            else:
-                metadata.append({"txt-text": flor.log("merged-text", txt_text)})
-
-            return metadata
+    return metadata
 
 
 @app.route("/metadata-for-page/<int:page_num>")
 def metadata_for_page(page_num: int):
     view_selection = flor.arg("debugging", 1)
     if view_selection == 0:
-        lattice = merge_text_lattice(pdf_names[-1], page_num)
+        lattice = memoized_metadata[os.path.splitext(pdf_names[-1])[0], page_num]
         last_message = lattice[-1]
         assert "ocr-text" in last_message or "txt-text" in last_message
         if "ocr-text" in last_message:
@@ -224,8 +223,7 @@ def metadata_for_page(page_num: int):
         # Retrieve metadata for the specified page number
         metadata: List[Dict[str, Any]] = [{"page_num": page_num + 1}]
         # Identify the PDF that we're working with
-        pdf_name = pdf_names[-1]
-        metadata += merge_text_lattice(pdf_name, page_num)
+        metadata += memoized_metadata[os.path.splitext(pdf_names[-1])[0], page_num]
         # Retrieve metadata for the specified page number
         return jsonify(metadata)
     else:
