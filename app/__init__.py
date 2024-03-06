@@ -58,7 +58,7 @@ def index():
         if os.path.exists(image_path):
             # Only include the part of the image_path that comes after 'app/static/private/imgs'
             relative_image_path = os.path.relpath(image_path, start="app/static")
-            pdf_previews.append((doc_name, relative_image_path))
+            pdf_previews.append((doc_name + ".pdf", relative_image_path))
 
         txt_page_numbers = {}
         ocr_page_numbers = {}
