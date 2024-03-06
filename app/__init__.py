@@ -84,7 +84,7 @@ def save_colors():
     # Process the colors here...
     pdf_name = pdf_names.pop()
     pdf_names.clear()
-    with flor.layer("document", None, pdf_name):
+    with flor.iteration("document", None, pdf_name):
         for c in flor.loop("page", colors):
             flor.log(config.page_color, c)
         flor.commit()
@@ -128,8 +128,8 @@ def merge_text_lattice(pdf_name, page_num):
     """***********************************
     Look at how flor.log is used for featurization
     ***********************************"""
-    with flor.layer("document", None, pdf_name):
-        with flor.layer("page", page_num, page_num):
+    with flor.iteration("document", None, pdf_name):
+        with flor.iteration("page", page_num, page_num):
             metadata = []
 
             metadata.append({"pdf_name": pdf_name})
