@@ -79,3 +79,4 @@ clean:
 	@find app/static/private/ocr -mindepth 1 -delete
 	@rm -f infer
 	@rm -f process_pdfs
+	@rm -f hand_label
