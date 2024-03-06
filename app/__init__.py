@@ -10,6 +10,15 @@ from .constants import PDF_DIR, IMGS_DIR
 
 app = Flask(__name__)
 pdf_names = []
+feat_names = (
+    "txt-headings",
+    "txt-page_numbers",
+    "ocr-headings",
+    "ocr-page_numbers",
+    "merge-source",
+    "merged-text",
+)
+memoized_features = None
 
 
 def get_colors():
@@ -45,6 +54,10 @@ def get_colors():
 
 @app.route("/")
 def index():
+    global memoized_features
+    if memoized_features is None:
+        memoized_features = flor.utils.latest(flor.dataframe(*feat_names))
+
     pdf_files = [
         os.path.splitext(f)[0] for f in os.listdir(PDF_DIR) if f.endswith(".pdf")
     ]
@@ -91,27 +104,28 @@ def save_colors():
     with flor.iteration("document", None, os.path.splitext(pdf_name)[0]):
         for i in flor.loop("page", range(len(colors))):
             flor.log(config.page_color, colors[i])
-        flor.commit()
-
-        return jsonify({"message": "Colors saved successfully"}), 200
+    flor.commit()
+    return jsonify({"message": "Colors saved successfully"}), 200
 
 
 @app.route("/metadata-for-page/<int:page_num>")
 def metadata_for_page(page_num: int):
-    view_selection = flor.arg("debugging", 1)
+    view_selection = 1
+    record = memoized_features[
+        memoized_features["document_value"] == os.path.splitext(pdf_names[-1])[0]
+    ][memoized_features["page"] == page_num + 1].to_dict(orient="records")[0]
     if view_selection == 0:
-        lattice = memoized_features[os.path.splitext(pdf_names[-1])[0], page_num]
-        last_message = lattice[-1]
-        assert "ocr-text" in last_message or "txt-text" in last_message
-        if "ocr-text" in last_message:
-            return jsonify([{f"ocr-page-{page_num+1}": last_message["ocr-text"]}])
+        if record["merge-source"] == "ocr":
+            return jsonify([{f"ocr-page-{page_num+1}": record["merged-text"]}])
         else:
-            return jsonify([{f"txt-page-{page_num+1}": last_message["txt-text"]}])
+            return jsonify([{f"txt-page-{page_num+1}": record["merged-text"]}])
     elif view_selection == 1:
         # Retrieve metadata for the specified page number
         metadata: List[Dict[str, Any]] = [{"page_num": page_num + 1}]
         # Identify the PDF that we're working with
-        metadata += memoized_features[os.path.splitext(pdf_names[-1])[0], page_num]
+        for k in record:
+            if k in feat_names:
+                metadata.append({k: record[k]})
         # Retrieve metadata for the specified page number
         return jsonify(metadata)
     else:
@@ -119,14 +133,4 @@ def metadata_for_page(page_num: int):
 
 
 if __name__ == "__main__":
-    memoized_features = flor.utils.latest(
-        flor.dataframe(
-            "txt-headings",
-            "txt-page_numbers",
-            "ocr-headings",
-            "ocr-page_numbers",
-            "merge-source",
-            "merged-text",
-        )
-    )
     app.run(debug=True)
