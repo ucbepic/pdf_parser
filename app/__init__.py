@@ -96,18 +96,6 @@ def save_colors():
         return jsonify({"message": "Colors saved successfully"}), 200
 
 
-memoized_features = flor.utils.latest(
-    flor.dataframe(
-        "txt-headings",
-        "txt-page_numbers",
-        "ocr-headings",
-        "ocr-page_numbers",
-        "merge-source",
-        "merged-text",
-    )
-)
-
-
 @app.route("/metadata-for-page/<int:page_num>")
 def metadata_for_page(page_num: int):
     view_selection = flor.arg("debugging", 1)
@@ -131,4 +119,14 @@ def metadata_for_page(page_num: int):
 
 
 if __name__ == "__main__":
+    memoized_features = flor.utils.latest(
+        flor.dataframe(
+            "txt-headings",
+            "txt-page_numbers",
+            "ocr-headings",
+            "ocr-page_numbers",
+            "merge-source",
+            "merged-text",
+        )
+    )
     app.run(debug=True)
