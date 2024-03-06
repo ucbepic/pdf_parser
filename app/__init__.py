@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, jsonify
 from werkzeug.utils import secure_filename
 import os
 import flor
-
+import warnings
 
 from . import config
 from .constants import PDF_DIR, IMGS_DIR
@@ -36,7 +36,7 @@ def get_colors():
         webapp = flor.dataframe(config.page_color)
         if not webapp.empty:
             webapp = flor.utils.latest(
-                webapp[webapp["document_value"] == pdf_names[-1]]
+                webapp[webapp["document_value"] == os.path.splitext(pdf_names[-1])[0]]
             )
             if webapp.empty:
                 return (infer[config.first_page].astype(int).cumsum() - 1).tolist()
@@ -110,10 +110,12 @@ def save_colors():
 
 @app.route("/metadata-for-page/<int:page_num>")
 def metadata_for_page(page_num: int):
-    view_selection = 1
-    record = memoized_features[
-        memoized_features["document_value"] == os.path.splitext(pdf_names[-1])[0]
-    ][memoized_features["page"] == page_num + 1].to_dict(orient="records")[0]
+    view_selection = 0
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", UserWarning)
+        record = memoized_features[
+            memoized_features["document_value"] == os.path.splitext(pdf_names[-1])[0]
+        ][memoized_features["page"] == page_num + 1].to_dict(orient="records")[0]
     if view_selection == 0:
         if record["merge-source"] == "ocr":
             return jsonify([{f"ocr-page-{page_num+1}": record["merged-text"]}])
@@ -125,7 +127,15 @@ def metadata_for_page(page_num: int):
         # Identify the PDF that we're working with
         for k in record:
             if k in feat_names:
-                metadata.append({k: record[k]})
+                try:
+                    obj = eval(record[k])
+                    if isinstance(obj, list):
+                        obj = [str(each).strip() for each in obj]
+                        metadata.append({k: obj})
+                    else:
+                        print("unknown type", k, ":", type(obj))
+                except:
+                    metadata.append({k: str(record[k])})
         # Retrieve metadata for the specified page number
         return jsonify(metadata)
     else:
