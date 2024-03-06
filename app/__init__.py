@@ -70,6 +70,7 @@ def index():
             )
             memoized_metadata[(doc_name, page)] = metadata
 
+    flor.commit()
     # Render the template with the PDF previews
     return render_template("index.html", pdf_previews=pdf_previews)
 
