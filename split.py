@@ -1,23 +1,11 @@
 import flor
 import fitz
 import os
-import warnings
-import sys
-from tqdm import tqdm
 
-from app.constants import PDF_DIR
+from app.constants import PDF_DIR, IMGS_DIR, OCR_DIR
 from app import config
 
-infer = flor.dataframe(config.page_path, config.first_page)
-infer = flor.utils.latest(infer)
-infer[config.pdf_name] = infer[config.page_path].map(
-    lambda x: os.path.basename(os.path.split(x)[0])
-)
-if not infer.empty:
-    infer[config.first_page] = infer[config.first_page].astype(int)
-    infer = infer.sort_values(by=["document", "page"])
-
-# TODO: use page_colors if tstamp for flask > infer tstamp
+from tqdm import tqdm
 
 
 def split_pdf(pdf_name, start_page, end_page):
@@ -29,7 +17,7 @@ def split_pdf(pdf_name, start_page, end_page):
     new_pdf_path = os.path.join(PDF_DIR, new_pdf_name)
 
     new_doc = fitz.open()  # type: ignore
-    for i in range(start_page - 1, end_page):  # adjust from 1-indexed to 0-indexed
+    for i in range(start_page, end_page + 1):  # 0-indexed
         new_doc.insert_pdf(doc, from_page=i, to_page=i)
 
     new_doc.save(new_pdf_path)
@@ -37,25 +25,30 @@ def split_pdf(pdf_name, start_page, end_page):
     doc.close()
 
 
-for pdf_name in infer["pdf_name"].unique():
-    document = infer[infer["pdf_name"] == pdf_name]
-    first_pages = document[document[config.first_page] == 1].reset_index(drop=True)
+if __name__ == "__main__":
 
-    print(first_pages)
-    print("num segments", len(first_pages))
-    print("last page", document.iloc[-1]["page"])
-
-    if len(first_pages) == 1:
-        print(f"No splitting to do for {pdf_name}")
-        continue
-
-    for index, row in first_pages.iterrows():
-        if index + 1 == len(first_pages):
-            split_pdf(
-                pdf_name + ".pdf", int(row["page"]), int(document.iloc[-1]["page"])
-            )
+    df = flor.utils.latest(flor.dataframe(config.first_page, config.page_color))
+    if not df.empty:
+        if df[config.first_page].isna().any():
+            df[config.first_page] = (
+                df.shift(1)[config.page_color] != df[config.page_color]
+            ).astype(int)
         else:
-            next_row = first_pages.iloc[index + 1]
-            split_pdf(pdf_name + ".pdf", int(row["page"]), int(next_row["page"]) - 1)
+            df[config.first_page] = df[config.first_page].astype(int)
 
-    os.remove(os.path.join(PDF_DIR, pdf_name + ".pdf"))
+    for doc_name in tqdm(df["document_value"].unique()):
+        document = df[df["document_value"] == doc_name]
+        first_pages = document[document[config.first_page] == 1].reset_index(drop=True)
+
+        if len(first_pages) == 1:
+            continue
+
+        first_pages["last_page"] = (
+            first_pages["page_value"].shift(-1).fillna(document.max().page).astype(int)
+            - 1
+        )
+
+        for index, row in first_pages.iterrows():
+            split_pdf(doc_name + ".pdf", int(row["page_value"]), int(row["last_page"]))
+
+        os.remove(os.path.join(PDF_DIR, doc_name + ".pdf"))
