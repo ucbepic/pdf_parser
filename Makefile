@@ -53,7 +53,7 @@ apply_split: split.py clean
 # Run the Flask development server
 run: featurize hand_label
 	@echo "Starting Flask development server..."
-	@flask run
+	@flask run --port 5001
 
 # Tesseract installation depending on the OS
 install_tesseract:
