@@ -12,10 +12,9 @@
 export FLASK_APP=run.py
 export FLASK_ENV=development
 
-PDFS := $(wildcard app/static/private/pdfs/*.pdf)
-
-# Detect OS
 UNAME_S := $(shell uname -s)
+
+PDFS := $(wildcard app/static/private/pdfs/*.pdf)
 
 process_pdfs: $(PDFS) pdf_demux.py
 	@echo "Processing PDF files..."
