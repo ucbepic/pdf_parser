@@ -10,14 +10,14 @@ from .constants import PDF_DIR, IMGS_DIR
 
 app = Flask(__name__)
 pdf_names = []
-feat_names = (
+feat_names = [
     "txt-headings",
     "txt-page_numbers",
     "ocr-headings",
     "ocr-page_numbers",
     "merge-source",
     "merged-text",
-)
+]
 memoized_features = None
 
 
@@ -54,7 +54,7 @@ def get_colors():
 
 @app.route("/")
 def index():
-    global memoized_features
+    global memoized_features, feat_names
     if memoized_features is None:
         memoized_features = flor.utils.latest(flor.dataframe(*feat_names))
 
