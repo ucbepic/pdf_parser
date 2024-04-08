@@ -1,0 +1,191 @@
+1. James P. McGovern	Massachusetts	02
+2. Gabe Vasquez	New Mexico	02
+3. Stephen F. Lynch	Massachusetts	08
+4. Matt Cartwright	Pennsylvania	08
+5. Earl Blumenauer	Oregon	03
+6. Jonathan L. Jackson	Illinois	01
+7. Steny H. Hoyer	Maryland	05
+8. Donald G. Davis	North Carolina	01
+9. Scott H. Peters	California	50
+10. Wiley Nickel	North Carolina	13
+11. Katherine M. Clark	Massachusetts	05
+12. Morgan McGarvey	Kentucky	03
+13. Hakeem S. Jeffries	New York	08
+14. Suzan K. DelBene	Washington	01
+15. Thomas R. Suozzi	New York	03
+16. Susan Wild	Pennsylvania	07
+17. Lucy McBath	Georgia	07
+18. Mike Thompson	California	04
+19. Bennie G. Thompson	Mississippi	02
+20. Emanuel Cleaver	Missouri	05
+21. Diana DeGette	Colorado	01
+22. Doris O. Matsui	California	07
+23. Salud O. Carbajal	California	24
+24. Ami Bera	California	06
+25. Joyce Beatty	Ohio	03
+26. Val T. Hoyle	Oregon	04
+27. Richard E. Neal	Massachusetts	01
+28. Jennifer L. McClellan	Virginia	04
+29. David Scott	Georgia	13
+30. Patrick Ryan	New York	18
+31. Andrea Salinas	Oregon	06
+32. Marilyn Strickland	Washington	10
+33. Chrissy Houlahan	Pennsylvania	06
+34. Mike Quigley	Illinois	05
+35. Jahana Hayes	Connecticut	05
+36. John B. Larson	Connecticut	01
+37. Sanford D. Bishop	Georgia	02
+38. Shri Thanedar	Michigan	13
+39. William R. Keating	Massachusetts	09
+40. Jake Auchincloss	Massachusetts	04
+41. J. Luis Correa	California	46
+42. Valerie P. Foushee	North Carolina	04
+43. Sean Casten	Illinois	06
+44. Jared Huffman	California	02
+45. Deborah K. Ross	North Carolina	02
+46. Lauren Underwood	Illinois	14
+47. Brittany Pettersen	Colorado	07
+48. Jamie Raskin	Maryland	08
+49. Joseph D. Morelle	New York	25
+50. Colin Z. Allred	Texas	32
+51. Gabe Amo	Rhode Island	01
+52. Greg Stanton	Arizona	04
+53. Juan Vargas	California	52
+54. Lizzie Fletcher	Texas	07
+55. Paul Tonko	New York	20
+56. Grace Meng	New York	06
+57. Robert C. "Bobby" Scott	Virginia	03
+58. Sara Jacobs	California	51
+59. Seth Magaziner	Rhode Island	02
+60. Tony Cárdenas	California	29
+61. Suzanne Bonamici	Oregon	01
+62. Ann M. Kuster	New Hampshire	02
+63. Mary Gay Scanlon	Pennsylvania	05
+64. Robin L. Kelly	Illinois	02
+65. Rosa L. DeLauro	Connecticut	03
+66. Jill N. Tokuda	Hawaii	02
+67. Sydney Kamlager-Dove	California	37
+68. Emilia Strong Sykes	Ohio	13
+69. Frederica S. Wilson	Florida	24
+70. Darren Soto	Florida	09
+71. Sheila Jackson Lee	Texas	18
+72. Zoe Lofgren	California	18
+73. John Garamendi	California	08
+74. Troy A. Carter	Louisiana	02
+75. Ed Case	Hawaii	01
+76. Hillary J. Scholten	Michigan	03
+77. Yvette D. Clarke	New York	09
+78. Bonnie Watson Coleman	New Jersey	12
+79. Gregory W. Meeks	New York	05
+80. James E. Clyburn	South Carolina	06
+81. Raja Krishnamoorthi	Illinois	08
+82. Jimmy Panetta	California	19
+83. Bradley Scott Schneider	Illinois	10
+84. Steve Cohen	Tennessee	09
+85. Shontel M. Brown	Ohio	11
+86. Rick Larsen	Washington	02
+87. Donald S. Beyer	Virginia	08
+88. Ted Lieu	California	36
+89. Christopher R. Deluzio	Pennsylvania	17
+90. Daniel T. Kildee	Michigan	08
+91. Lisa Blunt Rochester	Delaware	00
+92. James A. Himes	Connecticut	04
+93. Jasmine Crockett	Texas	30
+94. Adam B. Schiff	California	30
+95. Raul Ruiz	California	25
+96. Grace F. Napolitano	California	31
+97. Dwight Evans	Pennsylvania	03
+98. Jeff Jackson	North Carolina	14
+99. Nanette Diaz Barragán	California	44
+100. Glenn Ivey	Maryland	04
+101. Yadira Caraveo	Colorado	08
+102. Sheila Cherfilus-McCormick	Florida	20
+103. Bill Pascrell	New Jersey	09
+104. Seth Moulton	Massachusetts	06
+105. Greg Landsman	Ohio	01
+106. Joe Courtney	Connecticut	02
+107. Henry C. "Hank" Johnson	Georgia	04
+108. Linda T. Sánchez	California	38
+109. Jennifer Wexton	Virginia	10
+110. Mike Levin	California	49
+111. Abigail Davis Spanberger	Virginia	07
+112. Kathy Castor	Florida	14
+113. Janice D. Schakowsky	Illinois	09
+114. Anna G. Eshoo	California	16
+115. Alma S. Adams	North Carolina	12
+116. Josh Gottheimer	New Jersey	05
+117. Derek Kilmer	Washington	06
+118. Betty McCollum	Minnesota	04
+119. Lori Trahan	Massachusetts	03
+120. Adam Smith	Washington	09
+121. Ruben Gallego	Arizona	03
+122. Haley M. Stevens	Michigan	11
+123. Jared Moskowitz	Florida	23
+124. Brad Sherman	California	32
+125. Brendan F. Boyle	Pennsylvania	02
+126. Chris Pappas	New Hampshire	01
+127. Mark DeSaulnier	California	10
+128. Gwen Moore	Wisconsin	04
+129. Marie Gluesenkamp Perez	Washington	03
+130. John P. Sarbanes	Maryland	03
+131. Marcy Kaptur	Ohio	09
+132. Nikki Budzinski	Illinois	13
+133. Jason Crow	Colorado	06
+134. Teresa Leger Fernandez	New Mexico	03
+135. Frank J. Mrvan	Indiana	01
+136. Daniel S. Goldman	New York	10
+137. Adriano Espaillat	New York	13
+138. Becca Balint	Vermont	00
+139. Al Green	Texas	09
+140. Norma J. Torres	California	35
+141. Kathy E. Manning	North Carolina	06
+142. Pete Aguilar	California	33
+143. Eric Swalwell	California	14
+144. Mark Takano	California	39
+145. Bill Foster	Illinois	11
+146. Susie Lee	Nevada	03
+147. Julia Brownley	California	26
+148. Debbie Wasserman Schultz	Florida	25
+149. Frank Pallone	New Jersey	06
+150. C. A. Dutch Ruppersberger	Maryland	02
+151. Jim Costa	California	21
+152. Kweisi Mfume	Maryland	07
+153. Robert Menendez	New Jersey	08
+154. Terri A. Sewell	Alabama	07
+155. Elissa Slotkin	Michigan	07
+156. Judy Chu	California	28
+157. Marc A. Veasey	Texas	33
+158. Nancy Pelosi	California	11
+159. Maxine Waters	California	43
+160. Dina Titus	Nevada	01
+161. Eric Sorensen	Illinois	17
+162. Sylvia R. Garcia	Texas	29
+163. Henry Cuellar	Texas	28
+164. Joe Neguse	Colorado	02
+165. David J. Trone	Maryland	06
+166. Mikie Sherrill	New Jersey	11
+167. Jerrold Nadler	New York	12
+168. Angie Craig	Minnesota	02
+169. Nikema Williams	Georgia	05
+170. Ritchie Torres	New York	15
+171. Vicente Gonzalez	Texas	34
+172. Madeleine Dean	Pennsylvania	04
+173. Kim Schrier	Washington	08
+174. Melanie A. Stansbury	New Mexico	01
+175. Steven Horsford	Nevada	04
+176. Robert Garcia	California	42
+177. Donald Norcross	New Jersey	01
+178. Veronica Escobar	Texas	16
+179. Sharice Davids	Kansas	03
+180. Mary Sattler Peltola	Alaska	00
+181. Dean Phillips	Minnesota	03
+182. Katie Porter	California	47
+183. Andy Kim	New Jersey	03
+184. Gerald E. Connolly	Virginia	11
+185. Donald M. Payne	New Jersey	10
+186. Danny K. Davis	Illinois	07
+187. Lloyd Doggett	Texas	37
+188. Ken Buck	Colorado	04
+189. Josh Harder	California	09
+190. Kevin Mullin	California	15
+191. Chellie Pingree	Maine	01
