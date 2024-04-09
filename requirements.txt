@@ -5,3 +5,4 @@ PyMuPDF==1.23.7
 pytesseract==0.3.10
 florflow>=3.3.2
 torch
+fuzzywuzzy
