@@ -40,7 +40,7 @@ hand_label: label_by_hand.py
 	@python label_by_hand.py
 	@touch hand_label
 
-train: featurize train.py
+train: featurize hand_label train.py
 	@echo "Training..."
 	@python train.py
 

@@ -72,6 +72,7 @@ if __name__ == "__main__":
     device = torch.device(flor.arg("device", config.device))
     model = model.to(device)
 
+    # TODO: Infer first_page on each page, get ground trurh
     training_data = flor.dataframe(config.page_path, config.first_page)
     training_data[config.page_path] = training_data[config.page_path].apply(
         os.path.relpath
