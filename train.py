@@ -77,9 +77,7 @@ if __name__ == "__main__":
     training_data[config.page_path] = training_data[config.page_path].apply(
         os.path.relpath
     )
-    training_data = flor.utils.latest(
-        training_data[training_data["filename"] == "infer.py"]
-    )
+    training_data = flor.utils.latest(training_data)
 
     test_size = flor.arg("test_size", 0.2)
     train_data, val_data = train_test_split(training_data, test_size=test_size)
@@ -92,6 +90,7 @@ if __name__ == "__main__":
     batch_size = flor.arg("batch_size", 4)
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=batch_size)
+    flor.log("val_count", len(val_loader))
 
     # Loss function and optimizer
     w = torch.tensor([1.0, 10.0]).to(device)
@@ -134,7 +133,7 @@ if __name__ == "__main__":
                 optimizer.step()
 
                 # Statistics
-                running_loss += loss.item() * inputs.size(0)
+                running_loss += flor.log("loss", loss.item()) * inputs.size(0)
                 running_corrects += torch.sum(preds == labels.data)
 
                 all_labels.extend(labels.cpu().numpy())
@@ -153,6 +152,7 @@ if __name__ == "__main__":
             running_corrects = 0
             all_labels = []
             all_preds = []
+            count_label_1 = 0
 
             # Iterate over data.
             for inputs, labels in val_loader:
@@ -173,11 +173,14 @@ if __name__ == "__main__":
                 running_corrects += torch.sum(preds == labels.data)
                 all_labels.extend(labels.cpu().numpy())
                 all_preds.extend(preds.cpu().numpy())
+                count_label_1 += labels.tolist().count(1)
 
             epoch_loss = running_loss / len(val_dataset)
             flor.log(config.val_loss, float(epoch_loss))
             epoch_acc = running_corrects.float() / len(val_dataset)  # type: ignore
             flor.log(config.val_acc, float(epoch_acc))
+            flor.log("pos_count", count_label_1)
+            # TODO: manage skew
 
             # Calculate recall at the end of the epoch
             val_recall = recall_score(all_labels, all_preds)
