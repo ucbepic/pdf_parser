@@ -52,6 +52,12 @@ def get_colors():
             return (infer[config.first_page].astype(int).cumsum() - 1).tolist()
 
 
+def get_coordinates():
+    # TODO: To be implemented
+    data = flor.dataframe("c_left", "c_top", "c_width", "c_height")
+    return jsonify(data)
+
+
 @app.route("/")
 def index():
     global memoized_features, feat_names
@@ -89,7 +95,16 @@ def view_pdf():
     pdf_path = os.path.join(PDF_DIR, pdf_name)
 
     if os.path.isfile(pdf_path):
-        return render_template("label_pdf.html", pdf_name=pdf_name, colors=get_colors())
+        # TODO: NER
+        labeling = flor.arg("labeling", 1)
+        if labeling == 0:
+            return render_template(
+                "label_pdf.html", pdf_name=pdf_name, colors=get_colors()
+            )
+        elif labeling == 1:
+            return render_template("ner_pdf.html", pdf_name=pdf_name)
+        else:
+            raise
     else:
         return "File not found.", 404
 

@@ -166,3 +166,4 @@ process_pdfs
 infer
 hand_label
 featurize
+ner_parse

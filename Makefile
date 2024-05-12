@@ -13,7 +13,7 @@ export FLASK_APP=run.py
 export FLASK_ENV=development
 
 UNAME_S := $(shell uname -s)
-
+GIT_COMMIT := $(shell git rev-parse HEAD | cut -c 1-6)
 PDFS := $(wildcard app/static/private/pdfs/*.pdf)
 
 process_pdfs: $(PDFS) pdf_demux.py
@@ -48,11 +48,38 @@ apply_split: split.py clean
 	@echo "Applying split..."
 	@python split.py
 	
+ner_parse:
+	@if [ -f ~/.flor/court-records-processing.db ]; then \
+		mv ~/.flor/court-records-processing.db ~/.flor/court-records-processing.db.bak; \
+	fi
+	@if [ -f ~/.flor/pdf_parser.db ]; then \
+		mv ~/.flor/pdf_parser.db ~/.flor/court-records-processing.db; \
+	fi
+	@ls -lagh ~/.flor
+	@if [ -d ../court_records ]; then \
+		mv ../court_records ../court_records.bak; \
+	fi
+	@ln -sf $(realpath app/static/private/pdfs) ../court_records
+
+	@cd ../court-records-processing && (git checkout flor.pdf_parser$(GIT_COMMIT) || git checkout -b flor.pdf_parser$(GIT_COMMIT)) && make case_file_processer
+
+	@rm -f ../court_records
+	@if [ -d ../court_records.bak ]; then \
+		mv ../court_records.bak ../court_records; \
+	fi
+	@mv ~/.flor/court-records-processing.db ~/.flor/pdf_parser.db
+	@if [ -f ~/.flor/court-records-processing.db.bak ]; then \
+		mv ~/.flor/court-records-processing.db.bak ~/.flor/court-records-processing.db; \
+	fi
+	@ls -lagh ~/.flor
+	@touch ner_parse
+
 
 # Run the Flask development server
-run: featurize hand_label
+run: featurize ner_parse
 	@echo "Starting Flask development server..."
-	@flask run --port 5001
+	# @flask run --port 5000
+	python run.py --kwargs labeling=1
 
 # Tesseract installation depending on the OS
 install_tesseract:
@@ -85,3 +112,4 @@ clean:
 	@rm -f process_pdfs
 	@rm -f hand_label
 	@rm -f featurize
+	@rm -f ner_parse

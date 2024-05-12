@@ -1,0 +1,169 @@
+<!-- app/templates/ner_pdf.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Named Entity Resolution</title>
+    <style>
+        /* Main layout styles */
+
+        body {
+            background-color: rgb(127, 255, 212, 0.3);
+        }
+
+        .content {
+            display: flex;
+            margin-bottom: 0px;
+        }
+
+        /* Styles for PDF container */
+        .pdf-container {
+            position: relative;
+            overflow-y: visible;
+        }
+
+        /* Styles for metadata container */
+        .metadata {
+            flex: 0 0 25%;
+            overflow: scroll;
+            max-height: inherit;
+            padding: 1rem 1rem 1rem 0.5rem;
+            /* reduces left padding to 0.5rem */
+            box-sizing: border-box;
+            border-left: 1px solid #ccc;
+            background-color: white;
+        }
+
+
+        /* Styles for overlay */
+        .page-overlay {
+            position: absolute;
+            background-color: rgba(118, 42, 131, 0.2);
+        }
+
+        /* Style for the save and close button */
+        #save-close-btn {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+    </style>
+</head>
+
+<body>
+    <button id="save-close-btn">Save & Close</button> <!-- Added button -->
+    <script type="module">
+        import * as pdfjsLib from "{{ url_for('static', filename='js/pdf.mjs') }}";
+
+        // Add event listener to button
+        document.getElementById('save-close-btn').addEventListener('click', function () {
+            // Get all the overlays
+            const overlays = document.getElementsByClassName('page-overlay');
+            console.log(overlays);
+        });
+
+        async function loadPdf() {
+            const url = "{{ url_for('static', filename='private/pdfs/' + pdf_name) }}";
+            const loadingTask = pdfjsLib.getDocument(url);
+
+            try {
+                const pdf = await loadingTask.promise;
+
+                for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                    const page = await pdf.getPage(pageNum);
+                    const scale = 1.5; // Adjust as needed
+                    const viewport = page.getViewport({ scale: scale });
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+
+                    const renderContext = {
+                        canvasContext: context,
+                        viewport: viewport
+                    };
+                    await page.render(renderContext).promise;
+
+                    // TODO: NER overlays
+
+                    // const overlay = document.createElement('div');
+                    // overlay.className = 'page-overlay';
+                    // overlay.style.height = `${viewport.height}px`;
+                    // overlay.style.width = `${viewport.width}px`;
+                    // overlay.style.backgroundColor = getColorForPage(pageNum - 1);
+                    // overlay.onclick = (function () {
+                    //     // get the value from colorIndices if not null
+                    //     // var i = colorIndices ? colorIndices[pageNum - 1] + 1 : 1;
+                    //     var i = (colorIndices && colorIndices.length > 0) ? colorIndices[pageNum - 1] + 1 : 1;
+                    //     return function () {
+                    //         overlay.style.backgroundColor = color_wheel[i % color_wheel.length];
+                    //         i++;
+                    //     };
+                    // })();
+
+                    const pdfWrapper = document.createElement('div');
+                    pdfWrapper.className = 'pdf-container';
+                    pdfWrapper.appendChild(canvas);
+                    // pdfWrapper.appendChild(overlay);
+
+                    // Fetch and display metadata for the current page
+                    const metadata = await fetchPageMetadata(pageNum - 1);
+
+                    // Create a new element for the metadata and append it to the data-container
+                    const metadataWrapper = document.createElement('div');
+                    metadataWrapper.className = 'metadata';
+                    metadataWrapper.id = 'metadata-page-' + (pageNum - 1);
+                    for (const item of metadata) {
+                        for (const key in item) {
+                            if (item.hasOwnProperty(key)) {
+                                const data = document.createElement('p');
+                                data.innerHTML = '<strong>' + key + '</strong>: ' + item[key];
+                                metadataWrapper.appendChild(data);
+                            }
+                        }
+                    }
+
+                    const container = document.createElement('div');
+                    container.className = 'content';
+                    container.style.maxHeight = `${viewport.height}px`;
+                    container.appendChild(pdfWrapper);
+                    container.appendChild(metadataWrapper);
+
+                    document.body.appendChild(container);
+                }
+            } catch (e) {
+                console.error('Error loading PDF:', e);
+            }
+        }
+
+        // Implement the fetchPageMetadata function to retrieve metadata
+        async function fetchPageMetadata(pageNum) {
+            try {
+                const response = await fetch(`/metadata-for-page/${pageNum}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const metadata = await response.json(); // Assuming metadata is JSON
+                return metadata // Or process as needed based on your metadata structure
+            } catch (error) {
+                console.error('Fetching page metadata failed:', error);
+            }
+        }
+
+        // Set the workerSrc property
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "{{ url_for('static', filename='js/pdf.worker.mjs') }}";
+
+        document.addEventListener('DOMContentLoaded', loadPdf);
+    </script>
+</body>
+
+</html>
