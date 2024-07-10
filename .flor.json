@@ -1,0 +1,29 @@
+[
+  {
+    "projid": "mueller_report",
+    "tstamp": "2024-07-10T09:27:47",
+    "filename": "infer.py",
+    "ctx": null,
+    "name": "device",
+    "value": "mps",
+    "type": 1
+  },
+  {
+    "projid": "mueller_report",
+    "tstamp": "2024-07-10T09:27:47",
+    "filename": "infer.py",
+    "ctx": null,
+    "name": "delta::loop",
+    "value": 0.0004766659112647176,
+    "type": 3
+  },
+  {
+    "projid": "mueller_report",
+    "tstamp": "2024-07-10T09:27:47",
+    "filename": "infer.py",
+    "ctx": null,
+    "name": "delta::suffix",
+    "value": 3.829738999949768,
+    "type": 3
+  }
+]
