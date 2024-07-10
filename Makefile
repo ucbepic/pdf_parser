@@ -76,7 +76,7 @@ ner_parse:
 
 
 # Run the Flask development server
-run: featurize ner_parse
+run: featurize infer;
 	@echo "Starting Flask development server..."
 	# @flask run --port 5000
 	python run.py --kwargs labeling=1
