@@ -32,16 +32,6 @@ def get_colors():
             return df[config.page_color].astype(int).tolist()
         else:
             return (df[config.first_page].astype(int).cumsum() - 1).tolist()
-        #     webapp = webapp.sort_values("page")
-        #     if (
-        #         infer["tstamp"].drop_duplicates().values[0]
-        #         > webapp["tstamp"].drop_duplicates().values[0]
-        #     ):
-        #         return (infer[config.first_page].astype(int).cumsum() - 1).tolist()
-        #     else:
-        #         return webapp[config.page_color].astype(int).tolist()
-        # else:
-        #     return (infer[config.first_page].astype(int).cumsum() - 1).tolist()
 
 
 def get_coordinates():
