@@ -64,12 +64,19 @@ def index():
     if memoized_features is None:
         memoized_features = flor.utils.latest(flor.dataframe(*feat_names))
 
-    pdf_files = sorted(
-        [os.path.splitext(f)[0] for f in os.listdir(PDF_DIR) if f.endswith(".pdf")]
-    )
-    sorted_by_page = []
+    pdf_files = [
+        os.path.splitext(f)[0] for f in os.listdir(PDF_DIR) if f.endswith(".pdf")
+    ]
+    by_page = []
+    reservoir = []
     for filename in pdf_files:
-        filename.split("_")
+        last = filename.split("_")[-1]
+        try:
+            int(last)
+            by_page.append(filename)
+        except:
+            reservoir.append(filename)
+    pdf_files = sorted(by_page, key=lambda x: int(x.split("_")[-1])) + sorted(reservoir)
 
     # Resize each image and create a list of tuples (pdf, image_path)
     pdf_previews = []
