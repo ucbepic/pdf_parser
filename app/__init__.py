@@ -67,6 +67,9 @@ def index():
     pdf_files = sorted(
         [os.path.splitext(f)[0] for f in os.listdir(PDF_DIR) if f.endswith(".pdf")]
     )
+    sorted_by_page = []
+    for filename in pdf_files:
+        filename.split("_")
 
     # Resize each image and create a list of tuples (pdf, image_path)
     pdf_previews = []
