@@ -28,29 +28,20 @@ def get_colors():
         df = flor.utils.latest(
             df[df["document_value"] == os.path.splitext(pdf_names[-1])[0]]
         )
-        if df[config.first_page].isna().any():
-            df[config.first_page] = (
-                df.shift(1)[config.page_color] != df[config.page_color]
-            ).astype(int)
+        if df[config.page_color].notna().all():
+            return df[config.page_color].astype(int).tolist()
         else:
-            df[config.first_page] = df[config.first_page].astype(int)
-
-        if not webapp.empty:
-            webapp = flor.utils.latest(
-                webapp[webapp["document_value"] == os.path.splitext(pdf_names[-1])[0]]
-            )
-            if webapp.empty:
-                return (infer[config.first_page].astype(int).cumsum() - 1).tolist()
-            webapp = webapp.sort_values("page")
-            if (
-                infer["tstamp"].drop_duplicates().values[0]
-                > webapp["tstamp"].drop_duplicates().values[0]
-            ):
-                return (infer[config.first_page].astype(int).cumsum() - 1).tolist()
-            else:
-                return webapp[config.page_color].astype(int).tolist()
-        else:
-            return (infer[config.first_page].astype(int).cumsum() - 1).tolist()
+            return (df[config.first_page].astype(int).cumsum() - 1).tolist()
+        #     webapp = webapp.sort_values("page")
+        #     if (
+        #         infer["tstamp"].drop_duplicates().values[0]
+        #         > webapp["tstamp"].drop_duplicates().values[0]
+        #     ):
+        #         return (infer[config.first_page].astype(int).cumsum() - 1).tolist()
+        #     else:
+        #         return webapp[config.page_color].astype(int).tolist()
+        # else:
+        #     return (infer[config.first_page].astype(int).cumsum() - 1).tolist()
 
 
 def get_coordinates():
