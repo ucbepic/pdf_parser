@@ -23,17 +23,18 @@ memoized_features = None
 
 def get_colors():
     # TODO: this method may also be called by apply_split
-    infer = flor.dataframe(config.first_page, config.page_path)
-    infer = flor.utils.latest(
-        infer[
-            infer[config.page_path].map(
-                lambda x: os.path.splitext(pdf_names[-1])[0] in x
-            )
-        ]
-    )
-    if not infer.empty:
-        infer = infer.sort_values("page")
-        webapp = flor.dataframe(config.page_color)
+    df = flor.utils.latest(flor.dataframe(config.first_page, config.page_color))
+    if not df.empty:
+        df = flor.utils.latest(
+            df[df["document_value"] == os.path.splitext(pdf_names[-1])[0]]
+        )
+        if df[config.first_page].isna().any():
+            df[config.first_page] = (
+                df.shift(1)[config.page_color] != df[config.page_color]
+            ).astype(int)
+        else:
+            df[config.first_page] = df[config.first_page].astype(int)
+
         if not webapp.empty:
             webapp = flor.utils.latest(
                 webapp[webapp["document_value"] == os.path.splitext(pdf_names[-1])[0]]
