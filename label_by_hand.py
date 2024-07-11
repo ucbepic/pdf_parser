@@ -15,8 +15,8 @@ first_page = {
     "mueller_report": [0, 207, 394],
     # v1 :: TOC + 7
     "mueller_report_V1": [0, (11 + 7), (14 + 7), (36 + 7), (66 + 7), (174 + 7)],
-    # v2 :: (TOC + ) - 1
-    # page 9 in TOC is txt-page-
+    # v2 :: TOC + 4
+    "mueller_report_V2": [0, (9 + 4), (15 + 4), (159 + 4), (182 + 4)],
 }
 
 
