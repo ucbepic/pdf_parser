@@ -24,7 +24,7 @@ pdf_links: $(wildcard public/*.pdf)
 	done
 	@touch pdf_links
 
-process_pdfs: pdf_links pdf_demux.py
+process_pdfs: pdf_demux.py
 	@echo "Processing PDF files..."
 	@python pdf_demux.py
 	@touch process_pdfs
