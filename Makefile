@@ -76,10 +76,15 @@ ner_parse:
 
 
 # Run the Flask development server
-run: featurize infer
+run_infer: featurize infer
 	@echo "Starting Flask development server..."
 	# @flask run --port 5000
-	python run.py --kwargs labeling=1
+	@python run.py
+
+run_hand: featurize hand_label
+	@echo "Starting Flask development server..."
+	# @flask run --port 5000
+	@python run.py
 
 # Tesseract installation depending on the OS
 install_tesseract:

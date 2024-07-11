@@ -96,7 +96,7 @@ def view_pdf():
 
     if os.path.isfile(pdf_path):
         # TODO: NER
-        labeling = flor.arg("labeling", 1)
+        labeling = flor.arg("labeling", 0)
         if labeling == 0:
             return render_template(
                 "label_pdf.html", pdf_name=pdf_name, colors=get_colors()
