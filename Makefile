@@ -16,7 +16,14 @@ UNAME_S := $(shell uname -s)
 GIT_COMMIT := $(shell git rev-parse HEAD | cut -c 1-6)
 PDFS := $(wildcard app/static/private/pdfs/*.pdf)
 
-process_pdfs: $(PDFS) pdf_demux.py
+pdf_links: $(wildcard public/*.pdf)
+	@echo "Creating softlinks to PDF files..."
+	@for pdf in public/*.pdf; do \
+		echo $$pdf; \
+		ln -sf $$(realpath $$pdf) app/static/private/pdfs/$$(basename $$pdf); \
+	done
+
+process_pdfs: pdf_links pdf_demux.py
 	@echo "Processing PDF files..."
 	@python pdf_demux.py
 	@touch process_pdfs
