@@ -11,8 +11,11 @@ documents = sorted(
 )
 
 # 0-indexed first pages of each document
-# v1 :: TOC -> page_num := TOC + 8 -> TOC + 7
-first_page = {"mueller_report": [0, 207, 394]}
+first_page = {
+    "mueller_report": [0, 207, 394],
+    # v1 :: TOC + 7
+    "mueller_report_V1": [0, (11 + 7), (14 + 7), (36 + 7), (66 + 7), (174 + 7)],
+}
 
 
 if __name__ == "__main__":
