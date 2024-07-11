@@ -1,16 +1,16 @@
 [
   {
     "projid": "mueller_report",
-    "tstamp": "2024-07-11T08:09:50",
+    "tstamp": "2024-07-11T08:12:18",
     "filename": "run.py",
     "ctx": null,
     "name": "delta::loop",
-    "value": 0.008520415984094143,
+    "value": 0.007873707916587591,
     "type": 3
   },
   {
     "projid": "mueller_report",
-    "tstamp": "2024-07-11T08:09:50",
+    "tstamp": "2024-07-11T08:12:18",
     "filename": "run.py",
     "ctx": null,
     "name": "labeling",
@@ -19,38 +19,11 @@
   },
   {
     "projid": "mueller_report",
-    "tstamp": "2024-07-11T08:09:50",
-    "filename": "run.py",
-    "ctx": null,
-    "name": "labeling",
-    "value": 0,
-    "type": 1
-  },
-  {
-    "projid": "mueller_report",
-    "tstamp": "2024-07-11T08:09:50",
-    "filename": "run.py",
-    "ctx": null,
-    "name": "labeling",
-    "value": 0,
-    "type": 1
-  },
-  {
-    "projid": "mueller_report",
-    "tstamp": "2024-07-11T08:09:50",
-    "filename": "run.py",
-    "ctx": null,
-    "name": "labeling",
-    "value": 0,
-    "type": 1
-  },
-  {
-    "projid": "mueller_report",
-    "tstamp": "2024-07-11T08:09:50",
+    "tstamp": "2024-07-11T08:12:18",
     "filename": "run.py",
     "ctx": null,
     "name": "delta::suffix",
-    "value": 71.35844370804261,
+    "value": 340.708256041049,
     "type": 3
   }
 ]
