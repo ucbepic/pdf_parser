@@ -49,16 +49,10 @@ def index():
     pdf_files = [
         os.path.splitext(f)[0] for f in os.listdir(PDF_DIR) if f.endswith(".pdf")
     ]
-    by_page = []
-    reservoir = []
-    for filename in pdf_files:
-        last = filename.split("_")[-1]
-        try:
-            int(last)
-            by_page.append(filename)
-        except:
-            reservoir.append(filename)
-    pdf_files = sorted(by_page, key=lambda x: int(x.split("_")[-1])) + sorted(reservoir)
+    by_page = [each.split("_to_") for each in pdf_files if "_to_" in each]
+    by_page = sorted([(n, int(p)) for n, p in by_page])
+    reservoir = sorted([each for each in pdf_files if "_to_" not in each])
+    pdf_files = [f"{n}_to_{p}" for n, p in by_page] + reservoir
 
     # Resize each image and create a list of tuples (pdf, image_path)
     pdf_previews = []
