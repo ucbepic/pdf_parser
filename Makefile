@@ -22,6 +22,7 @@ pdf_links: $(wildcard public/*.pdf)
 		echo $$pdf; \
 		ln -sf $$(realpath $$pdf) app/static/private/pdfs/$$(basename $$pdf); \
 	done
+	@touch pdf_links
 
 process_pdfs: pdf_links pdf_demux.py
 	@echo "Processing PDF files..."
@@ -125,3 +126,4 @@ clean:
 	@rm -f hand_label
 	@rm -f featurize
 	@rm -f ner_parse
+	@rm -f pdf_links
