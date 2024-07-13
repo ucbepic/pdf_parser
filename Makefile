@@ -24,7 +24,7 @@ pdf_links: $(wildcard public/*.pdf)
 	done
 	@touch pdf_links
 
-process_pdfs: pdf_demux.py
+process_pdfs: pdf_demux.py pdf_links
 	@echo "Processing PDF files..."
 	@python pdf_demux.py
 	@touch process_pdfs
@@ -43,7 +43,7 @@ infer: model.pth infer.py
 	@python infer.py
 	@touch infer
 
-hand_label: label_by_hand.py
+hand_label: label_by_hand.py featurize
 	@echo "Labeling by hand"
 	@python label_by_hand.py
 	@touch hand_label
@@ -89,7 +89,7 @@ run_infer: featurize infer
 	# @flask run --port 5000
 	@python run.py
 
-run_hand: featurize hand_label
+run_hand: hand_label
 	@echo "Starting Flask development server..."
 	# @flask run --port 5000
 	@python run.py
