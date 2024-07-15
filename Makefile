@@ -16,7 +16,15 @@ UNAME_S := $(shell uname -s)
 GIT_COMMIT := $(shell git rev-parse HEAD | cut -c 1-6)
 PDFS := $(wildcard app/static/private/pdfs/*.pdf)
 
-process_pdfs: $(PDFS) pdf_demux.py
+pdf_links: $(wildcard public/*.pdf)
+	@echo "Creating softlinks to PDF files..."
+	@for pdf in public/*.pdf; do \
+		echo $$pdf; \
+		ln -sf $$(realpath $$pdf) app/static/private/pdfs/$$(basename $$pdf); \
+	done
+	@touch pdf_links
+
+process_pdfs: pdf_demux.py
 	@echo "Processing PDF files..."
 	@python pdf_demux.py
 	@touch process_pdfs
@@ -35,7 +43,7 @@ infer: model.pth infer.py
 	@python infer.py
 	@touch infer
 
-hand_label: label_by_hand.py
+hand_label: label_by_hand.py featurize
 	@echo "Labeling by hand"
 	@python label_by_hand.py
 	@touch hand_label
@@ -76,10 +84,15 @@ ner_parse:
 
 
 # Run the Flask development server
-run: featurize infer
+run_infer: featurize infer
 	@echo "Starting Flask development server..."
 	# @flask run --port 5000
-	python run.py --kwargs labeling=1
+	@python run.py
+
+run_hand: hand_label
+	@echo "Starting Flask development server..."
+	# @flask run --port 5000
+	@python run.py
 
 # Tesseract installation depending on the OS
 install_tesseract:
@@ -113,3 +126,4 @@ clean:
 	@rm -f hand_label
 	@rm -f featurize
 	@rm -f ner_parse
+	@rm -f pdf_links

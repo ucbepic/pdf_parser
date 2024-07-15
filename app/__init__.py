@@ -23,33 +23,16 @@ memoized_features = None
 
 def get_colors():
     # TODO: this method may also be called by apply_split
-    infer = flor.dataframe(config.first_page, config.page_path)
-    infer = flor.utils.latest(
-        infer[
-            infer[config.page_path].map(
-                lambda x: os.path.splitext(pdf_names[-1])[0] in x
-            )
-        ]
-    )
-    if not infer.empty:
-        infer = infer.sort_values("page")
-        webapp = flor.dataframe(config.page_color)
-        if not webapp.empty:
-            webapp = flor.utils.latest(
-                webapp[webapp["document_value"] == os.path.splitext(pdf_names[-1])[0]]
-            )
-            if webapp.empty:
-                return (infer[config.first_page].astype(int).cumsum() - 1).tolist()
-            webapp = webapp.sort_values("page")
-            if (
-                infer["tstamp"].drop_duplicates().values[0]
-                > webapp["tstamp"].drop_duplicates().values[0]
-            ):
-                return (infer[config.first_page].astype(int).cumsum() - 1).tolist()
+    df = flor.dataframe(config.first_page, config.page_color)
+    if not df.empty:
+        df = df[df["document_value"] == os.path.splitext(pdf_names[-1])[0]]
+        if not df.empty:
+            if df[config.page_color].notna().any():
+                df = flor.utils.latest(df[df.page_color.notna()])
+                return df[config.page_color].astype(int).tolist()
             else:
-                return webapp[config.page_color].astype(int).tolist()
-        else:
-            return (infer[config.first_page].astype(int).cumsum() - 1).tolist()
+                df = flor.utils.latest(df)
+                return (df[config.first_page].astype(int).cumsum() - 1).tolist()
 
 
 def get_coordinates():
@@ -67,6 +50,10 @@ def index():
     pdf_files = [
         os.path.splitext(f)[0] for f in os.listdir(PDF_DIR) if f.endswith(".pdf")
     ]
+    by_page = [each.split("_to_") for each in pdf_files if "_to_" in each]
+    by_page = sorted([(n, int(p)) for n, p in by_page])
+    reservoir = sorted([each for each in pdf_files if "_to_" not in each])
+    pdf_files = [f"{n}_to_{p}" for n, p in by_page] + reservoir
 
     # Resize each image and create a list of tuples (pdf, image_path)
     pdf_previews = []
@@ -96,7 +83,7 @@ def view_pdf():
 
     if os.path.isfile(pdf_path):
         # TODO: NER
-        labeling = flor.arg("labeling", 1)
+        labeling = flor.arg("labeling", 0)
         if labeling == 0:
             return render_template(
                 "label_pdf.html", pdf_name=pdf_name, colors=get_colors()
