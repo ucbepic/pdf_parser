@@ -23,15 +23,16 @@ memoized_features = None
 
 def get_colors():
     # TODO: this method may also be called by apply_split
-    df = flor.utils.latest(flor.dataframe(config.first_page, config.page_color))
+    df = flor.dataframe(config.first_page, config.page_color)
     if not df.empty:
-        df = flor.utils.latest(
-            df[df["document_value"] == os.path.splitext(pdf_names[-1])[0]]
-        )
-        if df[config.page_color].notna().all():
-            return df[config.page_color].astype(int).tolist()
-        else:
-            return (df[config.first_page].astype(int).cumsum() - 1).tolist()
+        df = df[df["document_value"] == os.path.splitext(pdf_names[-1])[0]]
+        if not df.empty:
+            if df[config.page_color].notna().any():
+                df = flor.utils.latest(df[df.page_color.notna()])
+                return df[config.page_color].astype(int).tolist()
+            else:
+                df = flor.utils.latest(df)
+                return (df[config.first_page].astype(int).cumsum() - 1).tolist()
 
 
 def get_coordinates():
