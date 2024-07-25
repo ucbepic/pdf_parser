@@ -17,7 +17,7 @@ first_page = {
     # "mueller_report_V1": [0, (11 + 7), (14 + 7), (36 + 7), (66 + 7), (174 + 7)],
     # v2 :: TOC + 4
     # "mueller_report_V2": [0, (9 + 4), (15 + 4), (159 + 4), (182 + 4)],
-    "Presidential_Immunity": [0, 51, 60, 67, 97],
+    "Presidential_Immunity": [0, 51, 60, 67, 97],  # TODO: split on syllabus?
 }
 
 
