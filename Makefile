@@ -20,6 +20,7 @@ pdf_links: $(wildcard public/*.pdf)
 	@echo "Creating softlinks to PDF files..."
 	@for pdf in public/*.pdf; do \
 		echo $$pdf; \
+		mkdir -p app/static/private/pdfs; \
 		ln -sf $$(realpath $$pdf) app/static/private/pdfs/$$(basename $$pdf); \
 	done
 	@touch pdf_links
